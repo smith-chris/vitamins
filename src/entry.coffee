@@ -1,28 +1,28 @@
 class NodeList
   constructor: ({input, groups}) ->
-    @list = [new Node(input: input, groups: groups)]
-    @idsList = []
+    @nodes = [new Node(input: input, groups: groups)]
+    @idsCacheList = []
 
   isDuplicate: (node) ->
-    for e in @idsList
-      if e is node.id
+    for id in @idsCacheList
+      if id is node.id
         return true
     return false
 
   compute: ->
     newList = []
-    for e in @list
-      newNodes = e.compute()
+    for node in @nodes
+      newNodes = node.compute()
       for node in newNodes
         if not @isDuplicate(node)
-          @idsList.push node.id
+          @idsCacheList.push node.id
           newList.push node
-    @list = newList
+    @nodes = newList
     return @
 
   match: (id) ->
-    for e in @list
-      match = e.match(id)
+    for node in @nodes
+      match = node.match(id)
       if match
         return match
     return null
@@ -38,35 +38,35 @@ class Node
     else
       groups = input
     res = ""
-    for k, v of groups
-      for e in v
-        res += k + e
+    for key, value of groups
+      for e in value
+        res += key + e
     return res
 
   @makeGroups: ({input, groups = {}, limited = true}) ->
     if typeof groups is "string"
-      res = {}
-      for e in groups.split("").sort()
-        res[e.toUpperCase()] = []
+      result = {}
+      for group in groups.split("").sort()
+        result[group.toUpperCase()] = []
     else
-      res = groups
+      result = groups
     if input
-      for e in input.split /[ ]+/
-        [all, number, group] = e.match /([0-9]*)([\w]*)/
+      for elem in input.split /[ ]+/
+        [all, number, group] = elem.match /([0-9]*)([\w]*)/
         if number and group
           group = group.toUpperCase()
 
           if not limited
-            if not res[group]
-              res[group] = []
+            if not result[group]
+              result[group] = []
 
-          if res[group]
-            res[group].push(parseInt(number))
+          if result[group]
+            result[group].push(parseInt(number))
 
-      for k, v of res
-        v.sort()
+      for key, value of result
+        value.sort()
 
-    return res
+    return result
 
   match: (id) ->
     if @id is id
@@ -81,23 +81,23 @@ class Node
   compute: -> @applySwaps(@possibleSwaps())
 
   possibleSwaps: ->
-    res = []
-    for k, v of @groups
-      last = @lastInGroup(v)
+    result = []
+    for key, value of @groups
+      last = @lastInGroup(value)
 
       if last > 0
         for k1, v1 of @groups
-          if v1 isnt v
+          if v1 isnt value
             last1 = @lastInGroup(v1)
             if last > last1
-              res.push [last, k, k1]
-    return res
+              result.push [last, key, k1]
+    return result
 
   cloneGroups: ->
-    res = {}
-    for k, v of @groups
-      res[k] = v.slice(0)
-    return res
+    result = {}
+    for key, value of @groups
+      result[key] = value.slice(0)
+    return result
 
   forEachInBranch: (callback) ->
     callback(this)
@@ -107,11 +107,11 @@ class Node
       currentParent = currentParent.parent
 
   swaps: ->
-    res = []
+    result = []
     @forEachInBranch (node) ->
       if node.swap
-        res.push node.swap
-    return JSON.stringify(res.reverse())
+        result.push node.swap
+    return JSON.stringify(result.reverse())
 
   applySwapsSequentially: (swaps) ->
     currentNode = this
@@ -122,24 +122,24 @@ class Node
     return currentNode
 
   applySwap: (swap) ->
-    from = @groups[swap[1]]
-    to = @groups[swap[2]]
-    fromLast = @lastInGroup(from)
-    if from and to and swap[0] is fromLast
-      toLast = @lastInGroup(to)
-      if fromLast > toLast
+    fromGroup = @groups[swap[1]]
+    toGroup = @groups[swap[2]]
+    fromGroupTopNum = @lastInGroup(fromGroup)
+    if fromGroup and toGroup and swap[0] is fromGroupTopNum
+      toGroupTopNum = @lastInGroup(toGroup)
+      if fromGroupTopNum > toGroupTopNum
         newGroups = @cloneGroups()
         newGroups[swap[2]].push(newGroups[swap[1]].pop())
         return new Node(groups: newGroups, parent: @, swap: swap)
     return null
 
   applySwaps: (swaps) ->
-    res = []
+    result = []
     for swap in swaps
       newNode = @applySwap(swap)
       if newNode?
-        res.push newNode
-    return res
+        result.push newNode
+    return result
 
 input = "4g 3g"
 #input = "3b 4b 5b 6b"
