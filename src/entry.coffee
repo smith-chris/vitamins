@@ -37,16 +37,16 @@ class Node
       groups = Node.makeGroups({input: input, limited: false})
     else
       groups = input
-    res = ""
+    result = ""
     for key, value of groups
       for e in value
-        res += key + e
-    return res
+        result += key + e
+    return result
 
   @makeGroups: ({input, groups = {}, limited = true}) ->
     if typeof groups is "string"
       result = {}
-      for group in groups.split("").sort()
+      for group in groups.split("")
         result[group.toUpperCase()] = []
     else
       result = groups
@@ -113,6 +113,19 @@ class Node
         result.push node.swap
     return JSON.stringify(result.reverse())
 
+  state: ->
+    result = ""
+    for key, value of @groups
+      for e in value
+        result += e + key + " "
+    return result.trim()
+
+  states: ->
+    result = []
+    @forEachInBranch (node) ->
+      result.push node.state()
+    return JSON.stringify(result.reverse())
+
   applySwapsSequentially: (swaps) ->
     currentNode = this
     for swap in swaps
@@ -154,7 +167,7 @@ node = node.applySwapsSequentially([
   [3, "G", "W"],
   [4, "B", "W"]
 ])
-console.log node
+console.log node.states()
 
 nodes = new NodeList(input: input, groups: possibleGroups)
 
