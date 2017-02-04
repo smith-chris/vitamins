@@ -3,8 +3,6 @@ class NodeList
     @list = [new Node(input: input, groups: groups)]
     @idsList = []
 
-  push: (e) -> @list.push(e)
-
   isDuplicate: (node) ->
     for e in @idsList
       if e is node.id
@@ -115,18 +113,32 @@ class Node
         res.push node.swap
     return JSON.stringify(res.reverse())
 
-  applySwaps: (actions) ->
+  applySwapsSequentially: (swaps) ->
+    currentNode = this
+    for swap in swaps
+      if not currentNode?
+        return null
+      currentNode = currentNode.applySwap(swap)
+    return currentNode
+
+  applySwap: (swap) ->
+    from = @groups[swap[1]]
+    to = @groups[swap[2]]
+    fromLast = @lastInGroup(from)
+    if from and to and swap[0] is fromLast
+      toLast = @lastInGroup(to)
+      if fromLast > toLast
+        newGroups = @cloneGroups()
+        newGroups[swap[2]].push(newGroups[swap[1]].pop())
+        return new Node(groups: newGroups, parent: @, swap: swap)
+    return null
+
+  applySwaps: (swaps) ->
     res = []
-    for e in actions
-      from = @groups[e[1]]
-      to = @groups[e[2]]
-      fromLast = @lastInGroup(from)
-      if from and to and e[0] is fromLast
-        toLast = @lastInGroup(to)
-        if fromLast > toLast
-          newGroups = @cloneGroups()
-          newGroups[e[2]].push(newGroups[e[1]].pop())
-          res.push new Node(groups: newGroups, parent: @, swap: e)
+    for swap in swaps
+      newNode = @applySwap(swap)
+      if newNode?
+        res.push newNode
     return res
 
 input = "4g 3g"
@@ -134,6 +146,15 @@ input = "4g 3g"
 target = "4w 3w"
 #target = "3w 4w 5w 6w"
 possibleGroups = "gwb"
+
+node = new Node(input: "3g 4g", groups: possibleGroups)
+console.log node
+node = node.applySwapsSequentially([
+  [4, "G", "B"],
+  [3, "G", "W"],
+  [4, "B", "W"]
+])
+console.log node
 
 nodes = new NodeList(input: input, groups: possibleGroups)
 
