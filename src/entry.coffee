@@ -17,7 +17,7 @@ class NodeList
     return null
 
 class Node
-  constructor: ({input, groups}) ->
+  constructor: ({input, groups, @parent}) ->
     @groups = Node.makeGroups({input: input, groups: groups})
     @id = Node.generateId(@groups)
 
@@ -102,7 +102,7 @@ class Node
         if fromLast > toLast
           newGroups = @cloneGroups()
           newGroups[e[2]].push(newGroups[e[1]].pop())
-          res.push new Node(groups: newGroups)
+          res.push new Node(groups: newGroups, parent: @)
     return res
 
 #input = "4g 3g"
@@ -119,7 +119,7 @@ moves = 0
 while true
   moves++
   console.log nodes
-  if moves > 10
+  if moves > 8
     console.log "Uups! Too many moves"
     break
   nodes = nodes.compute()
