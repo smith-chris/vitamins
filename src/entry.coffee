@@ -30,7 +30,7 @@ class NodeList
     return null
 
 class Node
-  constructor: ({input, groups, @parent}) ->
+  constructor: ({input, groups, @parent, @action}) ->
     @groups = Node.makeGroups({input: input, groups: groups})
     @id = Node.generateId(@groups)
 
@@ -101,6 +101,13 @@ class Node
       res[k] = v.slice(0)
     return res
 
+  forEachInBranch: (callback) ->
+    callback(this)
+    currentParent = @parent
+    while currentParent
+      callback(currentParent)
+      currentParent = currentParent.parent
+
   applyActions: (actions) ->
     res = []
     for e in actions
@@ -112,13 +119,13 @@ class Node
         if fromLast > toLast
           newGroups = @cloneGroups()
           newGroups[e[2]].push(newGroups[e[1]].pop())
-          res.push new Node(groups: newGroups, parent: @)
+          res.push new Node(groups: newGroups, parent: @, action: e)
     return res
 
-#input = "4g 3g"
-input = "3b 4b 5b 6b"
-#target = "4w 3w"
-target = "3w 4w 5w 6w"
+input = "4g 3g"
+#input = "3b 4b 5b 6b"
+target = "4w 3w"
+#target = "3w 4w 5w 6w"
 possibleGroups = "gwb"
 
 nodes = new NodeList(input: input, groups: possibleGroups)
@@ -136,5 +143,6 @@ while true
   match = nodes.match(targetId)
   if match
     console.log "WIN! Moves: #{moves}"
-    console.log match
+    match.forEachInBranch (node) ->
+      console.log node.action
     break
