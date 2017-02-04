@@ -88,6 +88,14 @@ class Node
       res[k] = v.slice(0)
     return res
 
+  hasIdenticalParent: ->
+    currentParent = @parent
+    while currentParent
+      if currentParent.id is @id
+        return true
+      currentParent = currentParent.parent
+    return false
+
   applyActions: (actions, returnNodeList) ->
     if returnNodeList
       res = new NodeList()
@@ -102,7 +110,9 @@ class Node
         if fromLast > toLast
           newGroups = @cloneGroups()
           newGroups[e[2]].push(newGroups[e[1]].pop())
-          res.push new Node(groups: newGroups, parent: @)
+          newNode = new Node(groups: newGroups, parent: @)
+          if not newNode.hasIdenticalParent()
+            res.push newNode
     return res
 
 #input = "4g 3g"
@@ -119,7 +129,7 @@ moves = 0
 while true
   moves++
   console.log nodes
-  if moves > 8
+  if moves > 18
     console.log "Uups! Too many moves"
     break
   nodes = nodes.compute()
