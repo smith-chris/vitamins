@@ -6,6 +6,11 @@ module.exports = class NodeWalker
 
   makeAllWhite: (input) -> @find(input, input.replace(/[a-z]/g, "w")).swaps()
 
+  getStates: (initial, operations) ->
+    node = new Node(input: "3g 4g", groups: @possibleGroups)
+    node = node.applySwapsSequentially(operations)
+    return node.states()
+
   find: (input, target) ->
     nodes = new NodeList(input: input, groups: @possibleGroups)
     targetId = Node.generateId(target)
