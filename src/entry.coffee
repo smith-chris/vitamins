@@ -1,12 +1,24 @@
 class NodeList
-  constructor: (@list = []) ->
+  constructor: ({input, groups}) ->
+    @list = [new Node(input: input, groups: groups)]
+    @idsList = []
 
   push: (e) -> @list.push(e)
+
+  isDuplicate: (node) ->
+    for e in @idsList
+      if e is node.id
+        return true
+    return false
 
   compute: ->
     newList = []
     for e in @list
-      newList = newList.concat(e.compute())
+      newNodes = e.compute()
+      for node in newNodes
+        if not @isDuplicate(node)
+          @idsList.push node.id
+          newList.push node
     @list = newList
     return @
 
@@ -89,14 +101,6 @@ class Node
       res[k] = v.slice(0)
     return res
 
-  hasIdenticalParent: ->
-    currentParent = @parent
-    while currentParent
-      if currentParent.id is @id
-        return true
-      currentParent = currentParent.parent
-    return false
-
   applyActions: (actions) ->
     res = []
     for e in actions
@@ -108,9 +112,7 @@ class Node
         if fromLast > toLast
           newGroups = @cloneGroups()
           newGroups[e[2]].push(newGroups[e[1]].pop())
-          newNode = new Node(groups: newGroups, parent: @)
-          if not newNode.hasIdenticalParent()
-            res.push newNode
+          res.push new Node(groups: newGroups, parent: @)
     return res
 
 #input = "4g 3g"
@@ -119,7 +121,7 @@ input = "3b 4b 5b 6b"
 target = "3w 4w 5w 6w"
 possibleGroups = "gwb"
 
-nodes = new NodeList([new Node input: input, groups: possibleGroups])
+nodes = new NodeList(input: input, groups: possibleGroups)
 
 targetId = Node.generateId(target)
 
@@ -127,7 +129,7 @@ moves = 0
 while true
   moves++
   console.log nodes
-  if moves > 18
+  if moves > 500
     console.log "Uups! Too many moves"
     break
   nodes = nodes.compute()
@@ -136,4 +138,3 @@ while true
     console.log "WIN! Moves: #{moves}"
     console.log match
     break
-
