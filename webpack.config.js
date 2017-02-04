@@ -4,7 +4,11 @@ module.exports = {
     path: "./",
     filename: "bundle.js"
   },
-  devtool: 'source-map',
+  devtool: "source-map",
+  resolve: {
+    extensions: [".js", ".coffee"],
+    modules: ["src", "node_modules"]
+  },
   module: {
     rules: [
       {
