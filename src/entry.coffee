@@ -1,10 +1,7 @@
 Node = require "Node"
 NodeList = require "NodeList"
+NodeWalker = require "NodeWalker"
 
-input = "4g 3g"
-#input = "3b 4b 5b 6b"
-target = "4w 3w"
-#target = "3w 4w 5w 6w"
 possibleGroups = "gwb"
 
 node = new Node(input: "3g 4g", groups: possibleGroups)
@@ -16,22 +13,9 @@ node = node.applySwapsSequentially([
 ])
 console.log node.states()
 
-nodes = new NodeList(input: input, groups: possibleGroups)
+input = "4g 3g"
 
-targetId = Node.generateId(target)
+exerciseSolver = new NodeWalker(possibleGroups)
 
-exports.test = "hollo"
-
-moves = 0
-while true
-  moves++
-  console.log nodes
-  if moves > 500
-    console.log "Uups! Too many moves"
-    break
-  nodes = nodes.compute()
-  match = nodes.match(targetId)
-  if match
-    console.log "WIN! Moves: #{moves}"
-    console.log match.swaps()
-    break
+# Exercise 1B
+console.log exerciseSolver.makeAllWhite(input)

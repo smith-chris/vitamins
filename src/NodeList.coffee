@@ -1,4 +1,4 @@
-Node = require "Node"
+Node = require "./Node.coffee"
 
 module.exports = class NodeList
   constructor: ({input, groups}) ->
