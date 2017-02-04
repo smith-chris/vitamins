@@ -108,6 +108,13 @@ class Node
       callback(currentParent)
       currentParent = currentParent.parent
 
+  swaps: ->
+    res = []
+    @forEachInBranch (node) ->
+      if node.swap
+        res.push node.swap
+    return JSON.stringify(res.reverse())
+
   applySwaps: (actions) ->
     res = []
     for e in actions
@@ -143,6 +150,5 @@ while true
   match = nodes.match(targetId)
   if match
     console.log "WIN! Moves: #{moves}"
-    match.forEachInBranch (node) ->
-      console.log node.swap
+    console.log match.swaps()
     break
