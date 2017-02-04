@@ -30,7 +30,7 @@ class NodeList
     return null
 
 class Node
-  constructor: ({input, groups, @parent, @action}) ->
+  constructor: ({input, groups, @parent, @swap}) ->
     @groups = Node.makeGroups({input: input, groups: groups})
     @id = Node.generateId(@groups)
 
@@ -80,9 +80,9 @@ class Node
       return e[e.length - 1]
     return 0
 
-  compute: -> @applyActions(@actions())
+  compute: -> @applySwaps(@possibleSwaps())
 
-  actions: ->
+  possibleSwaps: ->
     res = []
     for k, v of @groups
       last = @lastInGroup(v)
@@ -108,7 +108,7 @@ class Node
       callback(currentParent)
       currentParent = currentParent.parent
 
-  applyActions: (actions) ->
+  applySwaps: (actions) ->
     res = []
     for e in actions
       from = @groups[e[1]]
@@ -119,7 +119,7 @@ class Node
         if fromLast > toLast
           newGroups = @cloneGroups()
           newGroups[e[2]].push(newGroups[e[1]].pop())
-          res.push new Node(groups: newGroups, parent: @, action: e)
+          res.push new Node(groups: newGroups, parent: @, swap: e)
     return res
 
 input = "4g 3g"
@@ -144,5 +144,5 @@ while true
   if match
     console.log "WIN! Moves: #{moves}"
     match.forEachInBranch (node) ->
-      console.log node.action
+      console.log node.swap
     break
