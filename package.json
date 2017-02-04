@@ -1,0 +1,16 @@
+{
+  "name": "vitamins",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bundle.js",
+  "dependencies": {
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.12.3",
+    "webpack": "2"
+  },
+  "scripts": {
+    "dev": "webpack -w"
+  },
+  "author": "Chris",
+  "license": "ISC"
+}
