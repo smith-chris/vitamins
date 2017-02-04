@@ -6,8 +6,9 @@ class NodeList
   compute: ->
     newList = []
     for e in @list
-      newList = newList.concat(e.compute(false))
-    return new NodeList(newList)
+      newList = newList.concat(e.compute())
+    @list = newList
+    return @
 
   match: (id) ->
     for e in @list
@@ -67,7 +68,7 @@ class Node
       return e[e.length - 1]
     return 0
 
-  compute: (returnNodeList = true) -> @applyActions(@actions(), returnNodeList)
+  compute: -> @applyActions(@actions())
 
   actions: ->
     res = []
@@ -96,11 +97,8 @@ class Node
       currentParent = currentParent.parent
     return false
 
-  applyActions: (actions, returnNodeList) ->
-    if returnNodeList
-      res = new NodeList()
-    else
-      res = []
+  applyActions: (actions) ->
+    res = []
     for e in actions
       from = @groups[e[1]]
       to = @groups[e[2]]
@@ -121,7 +119,7 @@ input = "3b 4b 5b 6b"
 target = "3w 4w 5w 6w"
 possibleGroups = "gwb"
 
-nodes = new Node input: input, groups: possibleGroups
+nodes = new NodeList([new Node input: input, groups: possibleGroups])
 
 targetId = Node.generateId(target)
 
