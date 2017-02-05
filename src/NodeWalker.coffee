@@ -2,7 +2,7 @@ NodeList = require "./NodeList.coffee"
 Node = require "./Node.coffee"
 
 module.exports = class NodeWalker
-  constructor: (@possibleGroups) ->
+  constructor: ({@possibleGroups, @filter}) ->
 
   makeAllWhite: (input) -> @find(input, input.replace(/[a-z]/g, "w")).swaps()
 
@@ -11,9 +11,12 @@ module.exports = class NodeWalker
     node = node.applySwapsSequentially(operations)
     return node.states()
 
+  generateId: (input) ->
+    Node.generateId(input: input, possibleGroups: @possibleGroups, filter: @filter)
+
   find: (input, target) ->
-    nodes = new NodeList(input: input, possibleGroups: @possibleGroups)
-    targetId = Node.generateId(input: target, possibleGroups: @possibleGroups)
+    nodes = new NodeList(input: input, possibleGroups: @possibleGroups, filter: @filter)
+    targetId = @generateId(target)
     moves = 0
     while true
       moves++

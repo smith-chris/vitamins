@@ -1,12 +1,13 @@
-document.addEventListener "DOMContentLoaded", ->
+Node = require "Node"
+NodeWalker = require "NodeWalker"
 
+document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
 
-  NodeWalker = require "NodeWalker"
-
-  possibleGroups = "gwb"
-
-  exerciseSolver = new NodeWalker(possibleGroups)
+  exerciseSolver = new NodeWalker(
+    possibleGroups: "gwb"
+    filter: (num) -> num > 2 and num < 7
+  )
 
   # Exercise 1B
   console.log exerciseSolver.makeAllWhite("3g 4g")
@@ -20,5 +21,5 @@ document.addEventListener "DOMContentLoaded", ->
 
   $vitaminInput = $("#vitamin-input")
   $vitaminInput.addEventListener("keyup", ->
-    console.log this.value
+    console.log exerciseSolver.generateId(this.value)
   )

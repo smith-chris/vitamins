@@ -1,17 +1,17 @@
 module.exports = class Node
-  constructor: ({input, groups, possibleGroups, @parent, @swap}) ->
+  constructor: ({input, groups, possibleGroups, @parent, @swap, filter}) ->
     if groups
       @groups = groups
     else
-      @groups = Node.makeGroups({input: input, possibleGroups: possibleGroups})
+      @groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
     @id = Node.generateId(input: @groups)
 
-  @generateId: ({input, groups, possibleGroups}) ->
+  @generateId: ({input, groups, possibleGroups, filter}) ->
     if typeof input is "string"
       if not possibleGroups
-        groups = Node.makeGroups({input: input, limited: false})
+        groups = Node.makeGroups({input: input, limited: false, filter: filter})
       else
-        groups = Node.makeGroups({input: input, possibleGroups: possibleGroups})
+        groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
     else
       groups = input
     result = ""
@@ -20,7 +20,7 @@ module.exports = class Node
         result += key + e
     return result
 
-  @makeGroups: ({input, groups, possibleGroups, limited = true}) ->
+  @makeGroups: ({input, groups, possibleGroups, limited = true, filter}) ->
     result = {}
     if typeof possibleGroups is "string" and possibleGroups.length > 0
       for group in possibleGroups.split("").sort()
@@ -32,14 +32,19 @@ module.exports = class Node
       for elem in input.split /[ ]+/
         [all, number, group] = elem.match /([0-9]*)([\w]*)/
         if number and group
-          group = group.toUpperCase()
+          isAcceptable = true
+          if filter
+            isAcceptable = filter(number, group)
+          if isAcceptable
+            group = group.toUpperCase()
+            number = parseInt(number)
 
-          if not limited
-            if not result[group]
-              result[group] = []
+            if not limited
+              if not result[group]
+                result[group] = []
 
-          if result[group]
-            result[group].push(parseInt(number))
+            if result[group] and result[group].indexOf(number) is -1
+              result[group].push(number)
 
       for key, value of result
         value.sort()

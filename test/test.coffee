@@ -15,6 +15,11 @@ describe "Node", ->
 
       expect(groups).to.equal('{"B":[],"G":[3,4],"W":[]}')
 
+    it "Should'nt generate groups with duplicated numbers", ->
+      groups = JSON.stringify Node.makeGroups(input: "3g 3g 4g 4g", possibleGroups: possibleGroups)
+
+      expect(groups).to.equal('{"B":[],"G":[3,4],"W":[]}')
+
     it "Should sort groups", ->
       groups = JSON.stringify Node.makeGroups(input: "1w 3g 2w 4g", possibleGroups: possibleGroups)
 
@@ -80,7 +85,7 @@ describe "Node", ->
       expect(node1child.swaps()).to.deep.equal(JSON.stringify([node1.possibleSwaps()[0]]))
 
 describe "NodeWalker", ->
-  nodeWalker = new NodeWalker(possibleGroups)
+  nodeWalker = new NodeWalker(possibleGroups: possibleGroups)
 
   describe ".find()", ->
     target = "3w 4w 5w 6w"
