@@ -53,6 +53,32 @@ describe "Node", ->
 
       expect(id).to.equal("B1G3G6W1W4")
 
+  node1input = "3g 4g 5w"
+  node1 = new Node(input: node1input, possibleGroups: possibleGroups)
+
+  describe ".state()", ->
+    it "Should be equal to input string", ->
+      expect(node1.state()).to.equal(node1input.toUpperCase())
+
+  describe ".possibleSwaps()", ->
+    it "Should return correct swaps", ->
+      expect(node1.possibleSwaps()).to.deep.equal([[4, 'G', 'B'], [5, 'W', 'B'], [5, 'W', 'G']])
+
+  node1child = node1.applySwap(node1.possibleSwaps()[0])
+  describe ".applySwap()", ->
+    it "Should return new node with new id after applying swap", ->
+      expect(node1child).to.not.equal(node1)
+
+      expect(node1child.id).to.equal("B4G3W5")
+
+  describe ".states()", ->
+    it "Should return list of all states in branch", ->
+      expect(node1child.states()).to.deep.equal(JSON.stringify([node1.state(),node1child.state()]))
+
+  describe ".swaps()", ->
+    it "Should return list of all states in branch", ->
+      expect(node1child.swaps()).to.deep.equal(JSON.stringify([node1.possibleSwaps()[0]]))
+
 describe "NodeWalker", ->
   nodeWalker = new NodeWalker(possibleGroups)
 
