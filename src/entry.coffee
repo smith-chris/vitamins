@@ -1,15 +1,24 @@
-NodeWalker = require "NodeWalker"
+document.addEventListener "DOMContentLoaded", ->
 
-possibleGroups = "gwb"
+  $ = document.querySelector.bind(document)
 
-exerciseSolver = new NodeWalker(possibleGroups)
+  NodeWalker = require "NodeWalker"
 
-# Exercise 1B
-console.log exerciseSolver.makeAllWhite("3g 4g")
+  possibleGroups = "gwb"
 
-# Exercise 3A
-console.log exerciseSolver.getStates("3g 4g", [
-  [4, "G", "B"],
-  [3, "G", "W"],
-  [4, "B", "W"]
-])
+  exerciseSolver = new NodeWalker(possibleGroups)
+
+  # Exercise 1B
+  console.log exerciseSolver.makeAllWhite("3g 4g")
+
+  # Exercise 3A
+  console.log exerciseSolver.getStates("3g 4g", [
+    [4, "G", "B"],
+    [3, "G", "W"],
+    [4, "B", "W"]
+  ])
+
+  $vitaminInput = $("#vitamin-input")
+  $vitaminInput.addEventListener("keyup", ->
+    console.log this.value
+  )

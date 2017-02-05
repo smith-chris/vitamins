@@ -1,0 +1,38 @@
+body {
+    background: #eee;
+    text-align: center;
+}
+
+.shapes {
+    min-height: 100px;
+}
+
+.shapes svg {
+    width: 100px;
+    height: 100px;
+    margin-left: 15px;
+}
+
+.shapes svg:first-child {
+    margin-left: 0;
+}
+
+.form {
+    background: #fff;
+    display: inline-block;
+    padding: 20px;
+    margin: auto;
+    position: relative;
+    top: 45vh;
+    min-width: 457px;
+    min-height: 161px;
+    transform: translateY(-50%);
+}
+
+#vitamin-input {
+    width: 100%;
+    font-size: 20px;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 20px;
+}
