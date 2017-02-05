@@ -4,11 +4,14 @@
   "description": "",
   "main": "bundle.js",
   "dependencies": {
+    "chai": "^3.5.0",
     "coffee-loader": "^0.7.2",
     "coffee-script": "^1.12.3",
+    "mocha": "^3.2.0",
     "webpack": "2"
   },
   "scripts": {
+    "test": "mocha --compilers coffee:coffee-script/register",
     "dev": "webpack -w"
   },
   "author": "Chris",

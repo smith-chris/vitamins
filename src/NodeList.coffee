@@ -5,11 +5,7 @@ module.exports = class NodeList
     @nodes = [new Node(input: input, possibleGroups: possibleGroups, groups: groups)]
     @idsCacheList = []
 
-  isDuplicate: (node) ->
-    for id in @idsCacheList
-      if id is node.id
-        return true
-    return false
+  isDuplicate: (node) -> @idsCacheList.indexOf(node.id) >= 0
 
   compute: ->
     newList = []

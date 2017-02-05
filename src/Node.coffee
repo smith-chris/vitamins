@@ -20,13 +20,14 @@ module.exports = class Node
         result += key + e
     return result
 
-  @makeGroups: ({input, groups = {}, possibleGroups, limited = true}) ->
-    if typeof possibleGroups is "string"
-      result = {}
+  @makeGroups: ({input, groups, possibleGroups, limited = true}) ->
+    result = {}
+    if typeof possibleGroups is "string" and possibleGroups.length > 0
       for group in possibleGroups.split("").sort()
         result[group.toUpperCase()] = []
     else
-      result = groups
+      if limited
+        throw new Error("At least one possible group should be provided when limited is set to true.")
     if input
       for elem in input.split /[ ]+/
         [all, number, group] = elem.match /([0-9]*)([\w]*)/
