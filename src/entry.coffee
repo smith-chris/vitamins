@@ -3,6 +3,7 @@ NodeWalker = require "NodeWalker"
 
 document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
+  $$ = document.querySelectorAll.bind(document)
 
   exerciseSolver = new NodeWalker(
     possibleGroups: "gwb"
@@ -19,7 +20,25 @@ document.addEventListener "DOMContentLoaded", ->
     [4, "B", "W"]
   ])
 
+  $svgs = $$(".shapes svg")
+
+  resetSvgs = () ->
+    for e in $svgs
+      e.classList = []
+
+  visualize = (groups) ->
+    resetSvgs()
+    for key, val of groups
+      for num in val
+        applyColor(num, key)
+
+  applyColor = (num, color) ->
+    $svgs[num - 3].classList = [color]
+
+
+
   $vitaminInput = $("#vitamin-input")
+
   $vitaminInput.addEventListener("keyup", ->
-    console.log exerciseSolver.generateId(this.value)
+    visualize exerciseSolver.makeGroups(this.value)
   )

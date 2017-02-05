@@ -4,13 +4,48 @@ body {
 }
 
 .shapes {
-    min-height: 100px;
+    min-height: 104px;
 }
 
 .shapes svg {
-    width: 100px;
+    width: 0;
     height: 100px;
+    fill: #fff;
+    stroke: #fff;
     margin-left: 15px;
+    stroke-width: 1px;
+    opacity: 0;
+    transform: scale(0);
+    transition: transform .25s, width .25s ease .2s, opacity .25s;
+}
+
+.shapes svg polygon {
+    fill: #fff;
+    stroke: #fff;
+    transition-property: fill, stroke;
+    transition-duration: .25s;
+}
+
+.shapes svg.B, .shapes svg.W, .shapes svg.G {
+    transform: scale(1);
+    width: 100px;
+    transition: transform .25s ease .2s, width .25s, opacity .25s;
+    opacity: 1;
+}
+
+.shapes svg.B polygon {
+    fill: #000;
+    stroke: #000;
+}
+
+.shapes svg.W polygon {
+    stroke: #000;
+    fill: #fff;
+}
+
+.shapes svg.G polygon {
+    fill: #888;
+    stroke: #888;
 }
 
 .shapes svg:first-child {
