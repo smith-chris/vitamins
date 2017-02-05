@@ -1,11 +1,17 @@
 module.exports = class Node
-  constructor: ({input, groups, @parent, @swap}) ->
-    @groups = Node.makeGroups({input: input, groups: groups})
-    @id = Node.generateId(@groups)
+  constructor: ({input, groups, possibleGroups, @parent, @swap}) ->
+    if groups
+      @groups = groups
+    else
+      @groups = Node.makeGroups({input: input, possibleGroups: possibleGroups})
+    @id = Node.generateId(input: @groups)
 
-  @generateId: (input) ->
+  @generateId: ({input, groups, possibleGroups}) ->
     if typeof input is "string"
-      groups = Node.makeGroups({input: input, limited: false})
+      if not possibleGroups
+        groups = Node.makeGroups({input: input, limited: false})
+      else
+        groups = Node.makeGroups({input: input, possibleGroups: possibleGroups})
     else
       groups = input
     result = ""
@@ -14,10 +20,10 @@ module.exports = class Node
         result += key + e
     return result
 
-  @makeGroups: ({input, groups = {}, limited = true}) ->
-    if typeof groups is "string"
+  @makeGroups: ({input, groups = {}, possibleGroups, limited = true}) ->
+    if typeof possibleGroups is "string"
       result = {}
-      for group in groups.split("")
+      for group in possibleGroups.split("").sort()
         result[group.toUpperCase()] = []
     else
       result = groups

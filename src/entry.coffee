@@ -1,5 +1,3 @@
-Node = require "Node"
-NodeList = require "NodeList"
 NodeWalker = require "NodeWalker"
 
 possibleGroups = "gwb"

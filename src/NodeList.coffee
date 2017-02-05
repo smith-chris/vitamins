@@ -1,8 +1,8 @@
 Node = require "./Node.coffee"
 
 module.exports = class NodeList
-  constructor: ({input, groups}) ->
-    @nodes = [new Node(input: input, groups: groups)]
+  constructor: ({input, possibleGroups, groups}) ->
+    @nodes = [new Node(input: input, possibleGroups: possibleGroups, groups: groups)]
     @idsCacheList = []
 
   isDuplicate: (node) ->

@@ -7,17 +7,17 @@ module.exports = class NodeWalker
   makeAllWhite: (input) -> @find(input, input.replace(/[a-z]/g, "w")).swaps()
 
   getStates: (initial, operations) ->
-    node = new Node(input: "3g 4g", groups: @possibleGroups)
+    node = new Node(input: "3g 4g", possibleGroups: @possibleGroups)
     node = node.applySwapsSequentially(operations)
     return node.states()
 
   find: (input, target) ->
-    nodes = new NodeList(input: input, groups: @possibleGroups)
-    targetId = Node.generateId(target)
+    nodes = new NodeList(input: input, possibleGroups: @possibleGroups)
+    targetId = Node.generateId(input: target, possibleGroups: @possibleGroups)
     moves = 0
     while true
       moves++
-      if moves > 500
+      if moves > 20
         console.log "Uups! Too many moves"
         return null
         break
