@@ -49,7 +49,8 @@ describe "Node", ->
 
       expect(id).to.equal("G3W1W4")
 
-      id = Node.generateId(input: randomizeId("3g 4w 1b 2c 4e 6g 2c 1w 5a"), possibleGroups: possibleGroups)
+      id = Node.generateId(input: randomizeId("3g 4w 2c 4e 6g 2c 1w 5a"), possibleGroups: possibleGroups)
+      console.log id
 
       expect(id).to.equal("G3G6W1W4")
 
