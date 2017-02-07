@@ -48,6 +48,13 @@ module.exports = class Node
 
     return result
 
+  groupsToNumbers: ->
+    result = []
+    for key, value of @groups
+      for number in value
+        result.push number
+    return result.sort()
+
   match: (id) ->
     if @id is id
       return @

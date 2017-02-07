@@ -19,6 +19,7 @@
     error: (data, message) ->
       @valid = false
       console.log message
+      # TODO show error message
       @trigger "error", data
 
     success: (@data, message) ->
@@ -27,4 +28,5 @@
 
     warning: (data, message) ->
       console.log message
+      # TODO show warning message
       @trigger "warning", data

@@ -83,6 +83,17 @@ document.addEventListener "DOMContentLoaded", ->
   )
 
   outputValidation.on "success", (data) ->
-    console.log @
-    console.log "Input and output valid!"
-    # TODO check if output state can be created from input state
+    startNode = inputValidation.data
+    endNode = data
+    exerciseSolver.validatePossibleToFind(
+      startNode: startNode
+      endNode: endNode
+      validate:
+        error: @error.bind(@)
+        success: =>
+          console.log "All successful"
+          endNode = exerciseSolver.find(startNode.state(), endNode.state())
+          if endNode
+            # TODO enable animate button
+            $vitaminOperations.value = endNode?.swaps()
+    )

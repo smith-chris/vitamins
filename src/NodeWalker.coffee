@@ -58,6 +58,19 @@ module.exports = class NodeWalker
   makeGroups: (input) ->
     Node.makeGroups(input: input, possibleGroups: @possibleGroups, filter: @filter)
 
+  validatePossibleToFind: ({startNode, endNode, validate}) ->
+    data =
+      startNumbers: startNode.groupsToNumbers()
+      endNumbers: endNode.groupsToNumbers()
+    if data.startNumbers.length isnt data.endNumbers.length
+      validate.error(data, "Vitamins inital state (#{data.startNumbers.length} elements) should have the same amount of elements as end state (#{data.endNumbers.length} elements).")
+    else if data.startNumbers.join(",") isnt data.endNumbers.join(",")
+      validate.error(data, "Vitamins in initial state do not match end state vitamins.")
+    else
+      validate.success(data)
+
+
+
   find: (input, target) ->
     nodes = new NodeList(input: input, possibleGroups: @possibleGroups, filter: @filter)
     targetId = @generateId(target)
