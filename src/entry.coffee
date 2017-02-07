@@ -48,7 +48,6 @@ document.addEventListener "DOMContentLoaded", ->
   )
 
   inputValidation.on "success", (node) ->
-    console.log "Input validated!"
     visualize(node.groups)
 
   inputValidation.on "error", (data) ->
@@ -64,7 +63,8 @@ document.addEventListener "DOMContentLoaded", ->
       if inputValidation.valid
         exerciseSolver.validateOperations(operations: text, validate: @, node: inputValidation.data)
       else
-        @error("You must pass correct value to input field to proceed.")
+        @error(inputValidation.data, "You must pass correct value to input field to proceed.")
+        # TODO hook an one-time event on inputValidation success that will validate this field again
   )
 
   operationsValidation.on "success", (data) ->
@@ -79,7 +79,8 @@ document.addEventListener "DOMContentLoaded", ->
       if inputValidation.valid
         exerciseSolver.validateInput(text, @)
       else
-        @error("You must pass correct value to input field to proceed.")
+        @error(inputValidation.data, "You must pass correct value to input field to proceed.")
+        # TODO hook an one-time event on inputValidation success that will validate this field again
   )
 
   outputValidation.on "success", (data) ->

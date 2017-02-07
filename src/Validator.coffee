@@ -4,6 +4,7 @@
       @validate = => validate.call(@, @elem.value)
       @listeners = {}
       @elem.addEventListener(action, @validate)
+      @messageElem = @elem.parentNode.querySelector(".input-msg")
 
     on: (eventName, callback) ->
       if callback and typeof callback is "function"
@@ -18,15 +19,14 @@
 
     error: (data, message) ->
       @valid = false
-      console.log message
-      # TODO show error message
+      @messageElem.innerHTML = message
       @trigger "error", data
 
     success: (@data, message) ->
       @valid = true
+      @messageElem.innerHTML = message || ""
       @trigger "success", @data
 
     warning: (data, message) ->
-      console.log message
-      # TODO show warning message
+      @messageElem.innerHTML = message
       @trigger "warning", data
