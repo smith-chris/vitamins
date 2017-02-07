@@ -1,7 +1,7 @@
   module.exports = class Validator
-    constructor: ({@elem, validate, @errorMessage, @successMessage, @warningMessage, action = "input"}) ->
+    constructor: ({@elem, validate, action = "input"}) ->
       @valid = false
-      @validate = => validate(@elem.value, @)
+      @validate = => validate.call(@, @elem.value)
       @listeners = {}
       @elem.addEventListener(action, @validate)
 
@@ -16,16 +16,15 @@
         for listener in @listeners[eventName]
           listener(data)
 
-    error: (data) ->
+    error: (data, message) ->
       @valid = false
-      console.log @errorMessage?(data)
+      console.log message
       @trigger "error", data
 
-    success: (@data) ->
+    success: (@data, message) ->
       @valid = true
-      console.log @successMessage?(@data)
       @trigger "success", @data
 
-    warning: (data) ->
-      console.log @warningMessage?(data)
+    warning: (data, message) ->
+      console.log message
       @trigger "warning", data

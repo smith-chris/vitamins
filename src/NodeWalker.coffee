@@ -22,31 +22,35 @@ module.exports = class NodeWalker
     node = new Node({input, possibleGroups: @possibleGroups, filter: @filter})
     isEmpty = node.id is ""
     if isEmpty
-      validate.error(input)
+      if input.length > 0
+        message = "'#{input}' is not a valid value for this field."
+      else
+        message = "This field cannot be empty."
+      validate.error(input, message)
       return false
+
     else
       input = input.toUpperCase().trim().split(/[ ]+/).join(" ")
       isValid = input is node.state()
       if isValid
         validate.success(node)
       else
-        validate.warning(node)
         validate.success(node)
+        validate.warning(node, "Did you meant '#{node.state()}'?")
       return true
 
   validateOperations: ({operations, node, validate}) ->
     try
       operationsParsed = JSON.parse(operations.toUpperCase())
     catch err
-      validate.error err.toString()
+      validate.error err, err.toString()
       return
     if operationsParsed
-      node = node.applySwapsSequentially(operationsParsed, validate)
-      if node.node
-        validate.error(node)
+      data = node.applySwapsSequentially(operationsParsed, validate)
+      if data.node
+        validate.error(data, "Couldnt perform operation #{data.index} - [#{data.swap}] on vitamin line - [#{data.node.state()}]")
       else
-        validate.success(node)
-
+        validate.success(data)
 
   generateId: (input) ->
     Node.generateId(input: input, possibleGroups: @possibleGroups, filter: @filter)
