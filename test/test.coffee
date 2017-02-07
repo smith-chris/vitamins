@@ -30,11 +30,6 @@ describe "Node", ->
 
       expect(groups).to.deep.equal({B: [], W: [1, 4], G: [3]})
 
-    it "But should accept additional groups when limited is set to false", ->
-      groups = Node.makeGroups(input: "3g 4w 2c 1w 5a", limited: false)
-
-      expect(groups).to.deep.equal({G: [3], W: [1, 4], C: [2], A: [5]})
-
   randomizeId = (id) ->
     id = id.split(" ")
     result = ""
@@ -56,7 +51,7 @@ describe "Node", ->
 
       id = Node.generateId(input: randomizeId("3g 4w 1b 2c 4e 6g 2c 1w 5a"), possibleGroups: possibleGroups)
 
-      expect(id).to.equal("B1G3G6W1W4")
+      expect(id).to.equal("G3G6W1W4")
 
   node1input = "3g 4g 5w"
   node1 = new Node(input: node1input, possibleGroups: possibleGroups)

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>Vitamins</title>
+    <link href="normalize.css" rel="stylesheet"/>
     <link href="main.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="form">
-
-    <div class="shapes">
+    <span class="shapes">
         <svg xmlns="http://www.w3.org/2000/svg">
             <polygon points="2,97  50,5  98,97"></polygon>
         </svg>
@@ -24,8 +24,23 @@
         <svg xmlns="http://www.w3.org/2000/svg">
             <polygon points="50,98 7,75 7,25 50,2 93,25 93,75"></polygon>
         </svg>
+    </span>
+    <div class="input-group">
+        <label for="vitamin-input">Input:</label>
+        <div class="input-msg"></div>
+        <input id="vitamin-input" type="text"/>
     </div>
-    <input id="vitamin-input" type="text" name="">
+    <div class="input-group">
+        <label for="vitamin-operations">Operations:</label>
+        <div class="input-msg"></div>
+        <textarea id="vitamin-operations"></textarea>
+    </div>
+    <div class="input-group">
+        <label for="vitamin-output">Output:</label>
+        <div class="input-msg"></div>
+        <input id="vitamin-output" type="text"/>
+    </div>
+    <div id="animate" class="button disabled">Animate</div>
 </div>
 <script src="bundle.js"></script>
 </body>

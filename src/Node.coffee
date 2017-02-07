@@ -20,16 +20,16 @@ module.exports = class Node
         result += key + e
     return result
 
-  @makeGroups: ({input, groups, possibleGroups, limited = true, filter}) ->
+  @makeGroups: ({input, possibleGroups, filter}) ->
     result = {}
     if typeof possibleGroups is "string" and possibleGroups.length > 0
       for group in possibleGroups.split("").sort()
         result[group.toUpperCase()] = []
     else
-      if limited
-        throw new Error("At least one possible group should be provided when limited is set to true.")
+      throw new Error("At least one possible group should be provided.")
     if input
-      for elem in input.split /[ ]+/
+      usedNumbers = []
+      for elem in input.trim().split /[ ]+/
         [all, number, group] = elem.match /([0-9]*)([\w]*)/
         if number and group
           isAcceptable = true
@@ -39,11 +39,8 @@ module.exports = class Node
             group = group.toUpperCase()
             number = parseInt(number)
 
-            if not limited
-              if not result[group]
-                result[group] = []
-
-            if result[group] and result[group].indexOf(number) is -1
+            if result[group] and result[group].indexOf(number) is -1 and usedNumbers.indexOf(number) is -1
+              usedNumbers.push(number)
               result[group].push(number)
 
       for key, value of result
@@ -56,22 +53,26 @@ module.exports = class Node
       return @
     else return null
 
-  lastInGroup: (e) ->
-    if e.length > 0
-      return e[e.length - 1]
-    return 0
+  topInGroup: (e) ->
+    if e
+      if e.length > 0
+        return e[e.length - 1]
+      return 0
+    else
+      console.log "return null"
+      return null
 
   compute: -> @applySwaps(@possibleSwaps())
 
   possibleSwaps: ->
     result = []
     for key, value of @groups
-      last = @lastInGroup(value)
+      last = @topInGroup(value)
 
       if last > 0
         for k1, v1 of @groups
           if v1 isnt value
-            last1 = @lastInGroup(v1)
+            last1 = @topInGroup(v1)
             if last > last1
               result.push [last, key, k1]
     return result
@@ -97,11 +98,11 @@ module.exports = class Node
     return JSON.stringify(result.reverse())
 
   state: ->
-    result = ""
+    result = []
     for key, value of @groups
       for e in value
-        result += e + key + " "
-    return result.trim()
+        result.push e + key
+    return result.sort().join(" ")
 
   states: ->
     result = []
@@ -111,22 +112,25 @@ module.exports = class Node
 
   applySwapsSequentially: (swaps) ->
     currentNode = this
-    for swap in swaps
-      if not currentNode?
-        return null
-      currentNode = currentNode.applySwap(swap)
+    for swap, i in swaps
+      newNode = currentNode.applySwap(swap)
+      if not newNode
+        return {index: i + 1, swap: swap, node: currentNode}
+      else
+        currentNode = newNode
     return currentNode
 
   applySwap: (swap) ->
-    fromGroup = @groups[swap[1]]
-    toGroup = @groups[swap[2]]
-    fromGroupTopNum = @lastInGroup(fromGroup)
-    if fromGroup and toGroup and swap[0] is fromGroupTopNum
-      toGroupTopNum = @lastInGroup(toGroup)
-      if fromGroupTopNum > toGroupTopNum
-        newGroups = @cloneGroups()
-        newGroups[swap[2]].push(newGroups[swap[1]].pop())
-        return new Node(groups: newGroups, parent: @, swap: swap)
+    if swap.length > 2
+      fromGroup = @groups[swap[1]]
+      toGroup = @groups[swap[2]]
+      fromGroupTopNum = @topInGroup(fromGroup)
+      if fromGroup? and toGroup? and parseInt(swap[0]) is fromGroupTopNum
+        toGroupTopNum = @topInGroup(toGroup)
+        if fromGroupTopNum > toGroupTopNum
+          newGroups = @cloneGroups()
+          newGroups[swap[2]].push(newGroups[swap[1]].pop())
+          return new Node(groups: newGroups, parent: @, swap: swap)
     return null
 
   applySwaps: (swaps) ->
