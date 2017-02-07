@@ -12,7 +12,8 @@
   },
   "scripts": {
     "test": "mocha --compilers coffee:coffee-script/register",
-    "dev": "webpack -w"
+    "dev": "webpack -w",
+    "makeDocs": "docco src/*.coffee"
   },
   "author": "Chris",
   "license": "ISC"

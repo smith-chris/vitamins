@@ -1,24 +1,44 @@
-module.exports = class Node
-  constructor: ({input, groups, possibleGroups, @parent, @swap, filter}) ->
-    if groups
-      @groups = groups
-    else
-      @groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
-    @id = Node.generateId(input: @groups)
+# The **Node** class instance represents single state of Vitamins line.
+#
+# It takes either `{input: string, possibleGroups: string}` arguments to generate `@groups`
+# or `@groups: object` argument.
+#
+# `@parent: Node` and `@swap: string` arguments are used further for branch related computation.
+# Branch meaning all nodes from initial node to current node.
+#
+# `@groups` contains current vitamin color and numbers information.
 
-  @generateId: ({input, groups, possibleGroups, filter}) ->
+module.exports = class Node
+  constructor: ({input, @groups, possibleGroups, filter, @parent, @swap}) ->
+    if not @groups
+      @groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
+    @id = Node.generateId(groups: @groups)
+
+
+  # `static` **generateId()** returns unique string based on groups object.
+  #
+  # It takes either `{input: string, possibleGroups: string}` arguments to generate groups
+  # or `{groups: object}` argument that contains vitamin color and numbers information.
+
+  @generateId: ({groups, input, possibleGroups, filter}) ->
     if typeof input is "string"
-      if not possibleGroups
-        groups = Node.makeGroups({input: input, limited: false, filter: filter})
-      else
-        groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
-    else
-      groups = input
+      groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
     result = ""
     for key, value of groups
       for e in value
         result += key + e
     return result
+
+
+  # `static` **makeGroups()** returns object that contains vitamin color and numbers information
+  #
+  # It takes `{input: string, possibleGroups: string}` arguments to generate groups.
+  # For example:
+  #
+  #     {input: "3g 4g", possibleGroups: "bgw"}
+  # will return:
+  #
+  #     {G: [3, 4]}
 
   @makeGroups: ({input, possibleGroups, filter}) ->
     result = {}
@@ -33,6 +53,7 @@ module.exports = class Node
         [all, number, group] = elem.match /([0-9]*)([\w]*)/
         if number and group
           isAcceptable = true
+          # Optionally filter can be used to filter out unwanted elements.
           if filter
             isAcceptable = filter(number, group)
           if isAcceptable
@@ -48,6 +69,9 @@ module.exports = class Node
 
     return result
 
+
+  # **groupsToNumbers()** returns an array of numbers contained in `@groups` object properties.
+
   groupsToNumbers: ->
     result = []
     for key, value of @groups
@@ -60,6 +84,9 @@ module.exports = class Node
       return @
     else return null
 
+
+  # **topInGroup()** returns highest number in given array.
+
   topInGroup: (e) ->
     if e
       if e.length > 0
@@ -69,7 +96,13 @@ module.exports = class Node
       console.log "return null"
       return null
 
+
+  # **compute()** returns an array of nodes that all possible swaps could produce.
+
   compute: -> @applySwaps(@possibleSwaps())
+
+
+  # **possibleSwaps()** returns an array of possible swap operations on this node.
 
   possibleSwaps: ->
     result = []
@@ -90,12 +123,20 @@ module.exports = class Node
       result[key] = value.slice(0)
     return result
 
+
+  # **forEachInBranch()** performs an action(callback function) on all nodes in branch,
+  # starting from current node and finishing on initial node.
+
   forEachInBranch: (callback) ->
     callback(this)
     currentParent = @parent
     while currentParent
       callback(currentParent)
       currentParent = currentParent.parent
+
+
+  # **swaps()** returns a JSON Array of swap operation performed on all nodes in branch,
+  # starting from initial node and finishing on current node.
 
   swaps: ->
     result = []
@@ -104,6 +145,9 @@ module.exports = class Node
         result.push node.swap
     return JSON.stringify(result.reverse())
 
+
+  # **state()** returns a string representing Vitamins line state of this node.
+
   state: ->
     result = []
     for key, value of @groups
@@ -111,11 +155,20 @@ module.exports = class Node
         result.push e + key
     return result.sort().join(" ")
 
+
+  # **states()** returns a JSON Array of states of all nodes in branch,
+  # starting from initial node and finishing on current node.
+
   states: ->
     result = []
     @forEachInBranch (node) ->
       result.push node.state()
     return JSON.stringify(result.reverse())
+
+  # **.applySwapsSequentially()** returns a new Node with applied swap
+  # operations one after another(always on resulting node).
+  # If any of the given swaps cannot be applied it returns object containing information
+  # on which swap operation failed and to what node this swap could'nt be applied.
 
   applySwapsSequentially: (swaps) ->
     currentNode = this
@@ -126,6 +179,9 @@ module.exports = class Node
       else
         currentNode = newNode
     return currentNode
+
+
+  # **applySwap()** returns a new Node with applied swap operation.
 
   applySwap: (swap) ->
     if swap.length > 2
@@ -139,6 +195,8 @@ module.exports = class Node
           newGroups[swap[2]].push(newGroups[swap[1]].pop())
           return new Node(groups: newGroups, parent: @, swap: swap)
     return null
+
+  # **applySwaps()** returns an array of nodes each with applied separate swap operation.
 
   applySwaps: (swaps) ->
     result = []
