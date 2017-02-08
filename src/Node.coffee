@@ -24,9 +24,9 @@ module.exports = class Node
     if typeof input is "string"
       groups = Node.makeGroups({input: input, possibleGroups: possibleGroups, filter: filter})
     result = ""
-    for key, value of groups
-      for e in value
-        result += key + e
+    for groupName, groupArray of groups
+      for number in groupArray
+        result += groupName + number
     return result
 
 
@@ -40,42 +40,44 @@ module.exports = class Node
   #
   #     {G: [3, 4]}
 
+
   @makeGroups: ({input, possibleGroups, filter}) ->
-    result = {}
+    groups = {}
     if typeof possibleGroups is "string" and possibleGroups.length > 0
-      for group in possibleGroups.split("").sort()
-        result[group.toUpperCase()] = []
+      for groupName in possibleGroups.split("").sort()
+        groups[groupName.toUpperCase()] = []
     else
       throw new Error("At least one possible group should be provided.")
     if input
       usedNumbers = []
       for elem in input.trim().split /[ ]+/
-        [all, number, group] = elem.match /([0-9]*)([\w]*)/
-        if number and group
+        [all, number, groupName] = elem.match /([0-9]*)([\w]*)/
+        if number and groupName
           isAcceptable = true
           # Optionally filter can be used to filter out unwanted elements.
           if filter
-            isAcceptable = filter(number, group)
+            isAcceptable = filter(number, groupName)
           if isAcceptable
-            group = group.toUpperCase()
+            groupName = groupName.toUpperCase()
             number = parseInt(number)
 
-            if result[group] and result[group].indexOf(number) is -1 and usedNumbers.indexOf(number) is -1
-              usedNumbers.push(number)
-              result[group].push(number)
+            if groups[groupName] and groups[groupName].indexOf(number) is -1
+              if usedNumbers.indexOf(number) is -1
+                usedNumbers.push(number)
+                groups[groupName].push(number)
 
-      for key, value of result
-        value.sort()
+      for groupName, groupArray of groups
+        groupArray.sort()
 
-    return result
+    return groups
 
 
   # **groupsToNumbers()** returns an array of numbers contained in `@groups` object properties.
 
   groupsToNumbers: ->
     result = []
-    for key, value of @groups
-      for number in value
+    for groupName, groupArray of @groups
+      for number in groupArray
         result.push number
     return result.sort()
 
@@ -87,13 +89,12 @@ module.exports = class Node
 
   # **topInGroup()** returns highest number in given array.
 
-  topInGroup: (e) ->
-    if e
-      if e.length > 0
-        return e[e.length - 1]
+  topInGroup: (array) ->
+    if array
+      if array.length > 0
+        return array[array.length - 1]
       return 0
     else
-      console.log "return null"
       return null
 
 
@@ -105,23 +106,23 @@ module.exports = class Node
   # **possibleSwaps()** returns an array of possible swap operations on this node.
 
   possibleSwaps: ->
-    result = []
-    for key, value of @groups
-      last = @topInGroup(value)
+    swaps = []
+    for groupName1, groupArray1 of @groups
+      topNumber1 = @topInGroup(groupArray1)
 
-      if last > 0
-        for k1, v1 of @groups
-          if v1 isnt value
-            last1 = @topInGroup(v1)
-            if last > last1
-              result.push [last, key, k1]
-    return result
+      if topNumber1 > 0
+        for groupName2, groupArray2 of @groups
+          if groupArray2 isnt groupArray1
+            topNumber2 = @topInGroup(groupArray2)
+            if topNumber1 > topNumber2
+              swaps.push [topNumber1, groupName1, groupName2]
+    return swaps
 
   cloneGroups: ->
-    result = {}
-    for key, value of @groups
-      result[key] = value.slice(0)
-    return result
+    newGroups = {}
+    for groupName, groupArray of @groups
+      newGroups[groupName] = groupArray.slice(0)
+    return newGroups
 
 
   # **forEachInBranch()** performs an action(callback function) on all nodes in branch,
@@ -139,33 +140,33 @@ module.exports = class Node
   # starting from initial node and finishing on current node.
 
   swaps: ->
-    result = []
+    swaps = []
     @forEachInBranch (node) ->
       if node.swap
-        result.push node.swap
-    return JSON.stringify(result.reverse())
+        swaps.push node.swap
+    return JSON.stringify(swaps.reverse())
 
 
   # **state()** returns a string representing Vitamins line state of this node.
 
   state: ->
-    result = []
-    for key, value of @groups
-      for e in value
-        result.push e + key
-    return result.sort().join(" ")
+    elements = []
+    for groupName, groupArray of @groups
+      for number in groupArray
+        elements.push number + groupName
+    return elements.sort().join(" ")
 
 
   # **states()** returns a JSON Array of states of all nodes in branch,
   # starting from initial node and finishing on current node.
 
   states: ->
-    result = []
+    states = []
     @forEachInBranch (node) ->
-      result.push node.state()
-    return JSON.stringify(result.reverse())
+      states.push node.state()
+    return JSON.stringify(states.reverse())
 
-  # **.applySwapsSequentially()** returns a new Node with applied swap
+  # **applySwapsSequentially()** returns a new Node with applied swap
   # operations one after another(always on resulting node).
   # If any of the given swaps cannot be applied it returns object containing information
   # on which swap operation failed and to what node this swap could'nt be applied.
@@ -199,9 +200,9 @@ module.exports = class Node
   # **applySwaps()** returns an array of nodes each with applied separate swap operation.
 
   applySwaps: (swaps) ->
-    result = []
+    nodes = []
     for swap in swaps
       newNode = @applySwap(swap)
       if newNode?
-        result.push newNode
-    return result
+        nodes.push newNode
+    return nodes
