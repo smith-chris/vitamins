@@ -86,7 +86,7 @@ document.addEventListener "DOMContentLoaded", ->
   outputValidation.on "success", (data) ->
     startNode = inputValidation.data
     endNode = data
-    exerciseSolver.validatePossibleToFind(
+    exerciseSolver.validateIsPossibleToFind(
       startNode: startNode
       endNode: endNode
       validate:

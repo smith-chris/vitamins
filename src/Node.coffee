@@ -40,7 +40,6 @@ module.exports = class Node
   #
   #     {G: [3, 4]}
 
-
   @makeGroups: ({input, possibleGroups, filter}) ->
     groups = {}
     if typeof possibleGroups is "string" and possibleGroups.length > 0
