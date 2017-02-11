@@ -48,19 +48,20 @@ document.addEventListener "DOMContentLoaded", ->
   animating = false
   interval = null
   animate = (operations) ->
-    i = 0
-    animating = true
-    interval = setInterval (->
-      if i is operations.length
-        stopAnimation()
-        return
-      visualize(operations[i++].groups)
-    ), 750
+    if operations?.length > 0
+      i = 1
+      animating = true
+      visualize(operations[0].groups)
+      interval = setInterval (->
+        if i is operations.length
+          stopAnimation()
+          return
+        visualize(operations[i++].groups)
+      ), 750
 
   stopAnimation = ->
     clearInterval(interval)
     animating = false
-#    visualize(initialStateValidation.data.groups)
     $animateButton.innerHTML = "Start animation"
 
   $initialState = $("#initial-state")
@@ -119,7 +120,7 @@ document.addEventListener "DOMContentLoaded", ->
   swapOperationsValidation.on "success", (data) ->
     if data isnt initialStateValidation.data
       $finalState.value = data.state()
-      finalStateValidation.clear()
+      finalStateValidation.clearMessage()
       onFormValidated()
 
 
