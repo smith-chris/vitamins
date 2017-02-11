@@ -1,11 +1,19 @@
 module.exports = class Validator
   constructor: ({@elem, validate, action = "input"}) ->
     @valid = false
-    @validate = => validate.call(@, @elem.value)
+    @validate = =>
+      if @wasFocused
+        validate.call(@, @elem.value)
     @listeners = {}
     @elem.addEventListener(action, @validate)
+    @elem.addEventListener("blur", @validate)
+    @elem.addEventListener("focus", =>
+      @wasFocused = true
+      @elem.removeEventListener("focus", arguments.callee)
+    )
     @messageElem = @elem.parentNode.querySelector(".message")
     @textElem = @messageElem.appendChild(document.createElement("div"))
+    @wasFocused = false
 
   clearMessage: ->
     @messageElem.style.height = 0

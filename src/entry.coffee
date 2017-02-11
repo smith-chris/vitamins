@@ -63,6 +63,8 @@ document.addEventListener "DOMContentLoaded", ->
     clearInterval(interval)
     animating = false
     $animateButton.innerHTML = "Start animation"
+    $animateButton.classList.remove("active")
+
 
   $initialState = $("#initial-state")
   $swapOperations = $("#swap-operations")
@@ -74,6 +76,7 @@ document.addEventListener "DOMContentLoaded", ->
     if not animating
       if not this.classList.contains("disabled")
         $animateButton.innerHTML = "Stop animation"
+        $animateButton.classList.add("active")
         animate swapOperationsValidation.data.branch()
     else
       stopAnimation()
@@ -149,10 +152,11 @@ document.addEventListener "DOMContentLoaded", ->
           if endNode
             onFormValidated()
             $swapOperations.value = endNode?.swaps()
-            swapOperationsValidation.success(endNode)
+            swapOperationsValidation.clearMessage()
+            swapOperationsValidation.data = endNode
     )
 
 
 #  $initialState.value = "3g 4g 5w 6b"
-  $initialState.value = "3g 4g"
-  initialStateValidation.validate()
+#  $initialState.value = "3g 4g"
+#  initialStateValidation.validate()

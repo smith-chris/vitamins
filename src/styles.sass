@@ -7,25 +7,24 @@ body
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
 
 .form-wrapper
-  height: 100vh
-  min-height: 540px
+  min-height: 100vh
   padding: 5px
   box-sizing: border-box
   position: relative
+  display: flex
+  align-items: center
+  @media(min-width: 768px)
+    padding: 10px
   .form
     box-shadow: 0 0 25px rgba(black, .25)
     background: #fff
-    display: inline-block
+    display: block
     padding: 20px
     margin: auto
     width: 485px
     min-height: 161px
     max-width: 100%
     box-sizing: border-box
-    @media (min-height: 600px)
-      position: relative
-      top: 50%
-      transform: translateY(-50%)
 
 .input-group
   .message
@@ -37,7 +36,7 @@ body
     > .error
       color: #ff5c66
     > .warning
-      color: #be9328
+      color: #eda015
   &.error, &.warning
     .message
       opacity: 1
@@ -45,7 +44,7 @@ body
   label
     line-height: 38px
     font-weight: bold
-    margin-top: 20px
+    margin-top: 10px
     display: block
     min-height: 20px
     transition-property: line-height
@@ -142,10 +141,13 @@ body
   font-weight: bold
   display: block
   text-decoration: none
+  transition: background $anim-time
   &:hover
     background: #00a8e0
   &:active
     background: #007ea9
+  &.active
+    background: #006a8e
   &.disabled
     background-color: #aaa
     cursor: not-allowed

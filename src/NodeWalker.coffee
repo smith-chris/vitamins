@@ -82,10 +82,13 @@ module.exports = class NodeWalker
         if not Array.isArray(operationsParsed)
           validate.error(operationsParsed, 'A value of this field should be an array. For example [["4","G","W"]].')
         else
+          if operationsParsed.length is 0
+            validate.error(data, "Provide at least one swap operation to perform.")
+            return
           data = node.applySwapsSequentially(operationsParsed, validate)
           if data.node
-            validate.error(data, "Couldnt perform operation #{data.index}
-             - [#{JSON.stringify(data.swap)}] on vitamin line - [#{data.node.state()}]")
+            validate.error(data, "Could'nt perform operation #{data.index}
+             - [#{JSON.stringify(data.swap)}] on vitamin state - [#{data.node.state()}]")
           else
             validate.success(data)
     else
@@ -98,13 +101,16 @@ module.exports = class NodeWalker
   # It takes `validate: Validator` argument to invoke success, warning and error events.
 
   validateIsPossibleToFind: ({startNode, endNode, validate}) ->
+    decline = (word, amount) -> return if amount > 1 then "#{word}s" else word
     data =
       startNumbers: startNode.groupsToNumbers()
       endNumbers: endNode.groupsToNumbers()
     if data.startNumbers.length isnt data.endNumbers.length
       validate.error(data,
-        "Vitamins inital state (#{data.startNumbers.length} elements) should have
- the same amount of elements as end state (#{data.endNumbers.length} elements).")
+        "Vitamins inital state (#{data.startNumbers.length}
+        #{decline("element", data.startNumbers.length)}) should have
+        the same amount of elements as final state (#{data.endNumbers.length}
+        #{decline("element", data.endNumbers.length)}).")
     else if data.startNumbers.join(",") isnt data.endNumbers.join(",")
       validate.error(data, "Vitamins in initial state do not match end state vitamins.")
     else
