@@ -20,6 +20,7 @@ module.exports = class Validator
   error: (data, message) ->
     @valid = false
     @messageElem.innerHTML = message
+    @messageElem.classList.add("error")
     @trigger "error", data
 
   success: (@data, message) ->
@@ -29,4 +30,5 @@ module.exports = class Validator
 
   warning: (data, message) ->
     @messageElem.innerHTML = message
+    @messageElem.classList.add("warning")
     @trigger "warning", data

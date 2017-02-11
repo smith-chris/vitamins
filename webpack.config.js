@@ -6,7 +6,7 @@ module.exports = {
   },
   devtool: "source-map",
   resolve: {
-    extensions: [".js", ".coffee"],
+    extensions: [".js", ".coffee", ".sass"],
     modules: ["src", "node_modules"]
   },
   module: {
@@ -15,6 +15,14 @@ module.exports = {
         test: /\.coffee$/,
         exclude: /(node_modules|bower_components)/,
         use: ["coffee-loader"]
+      }, {
+        test: /(\.scss|\.sass)$/,
+        use: [
+          "style-loader",
+          "css-loader",
+          "postcss-loader",
+          "sass-loader"
+        ]
       }
     ]
   }

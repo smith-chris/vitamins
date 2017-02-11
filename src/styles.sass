@@ -1,0 +1,99 @@
+body
+  background: #eee
+  text-align: center
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+
+.shapes
+  min-height: 104px
+  overflow: hidden
+  display: inline-block
+  svg
+    width: 0
+    height: 100px
+    fill: #fff
+    stroke: #fff
+    margin: 0
+    stroke-width: 1px
+    opacity: 0
+    transform: scale(0)
+    transition: transform .25s, width .25s ease .2s, margin .25s ease .2s, opacity .25s
+    position: relative
+    float: left
+    polygon
+      fill: #fff
+      stroke: #fff
+      transition-property: fill, stroke
+      transition-duration: .25s
+    &.B, &.W, &.G
+      transform: scale(1)
+      width: 100px
+      height: 100px
+      transition: transform .25s ease .2s, width .25s, margin .25s, opacity .25s
+      opacity: 1
+      margin-left: 15px
+    &.B polygon
+      fill: #000
+      stroke: #000
+    &.W polygon
+      stroke: #000
+      fill: #fff
+    &.G polygon
+      fill: #888
+      stroke: #888
+    &:first-child
+      margin-left: 0
+
+.form
+  background: #fff
+  display: inline-block
+  padding: 20px
+  margin: auto
+  position: relative
+  top: 45vh
+  width: 460px
+  min-height: 161px
+  transform: translateY(-50%)
+  label
+    font-weight: bold
+    margin-top: 20px
+    display: block
+  input
+    border: 1px solid rgb(238, 238, 238)
+    display: inline
+    width: 100%
+    max-width: 100%
+    font-size: 20px
+    padding: 5px
+    box-sizing: border-box
+    margin-top: 10px
+  textarea
+    border: 1px solid rgb(238, 238, 238)
+    display: inline
+    width: 100%
+    max-width: 100%
+    font-size: 20px
+    padding: 5px
+    box-sizing: border-box
+    margin-top: 10px
+    min-height: 130px
+
+.button
+  color: white
+  width: 100%
+  margin-top: 20px
+  height: 50px
+  cursor: pointer
+  font-size: 1em
+  padding: 0
+  background: deepskyblue
+  line-height: 50px
+  font-weight: bold
+  display: block
+  text-decoration: none
+  &:hover
+    background: #00a8e0
+  &:active
+    background: #007ea9
+  &.disabled
+    background-color: #aaa
+    cursor: not-allowed

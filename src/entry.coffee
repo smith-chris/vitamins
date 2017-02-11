@@ -1,6 +1,7 @@
 Node = require "Node"
 NodeWalker = require "NodeWalker"
 Validator = require "Validator"
+require "styles"
 
 document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
