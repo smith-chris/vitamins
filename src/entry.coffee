@@ -12,6 +12,10 @@ document.addEventListener "DOMContentLoaded", ->
     filter: (num) -> num > 2 and num < 7
   )
 
+  removeClasses = ($element) ->
+    for className in $element.classList
+      $element.classList.remove(className)
+
   # Exercise 1B
   console.log exerciseSolver.makeAllWhite("3g 4g")
 
@@ -37,7 +41,9 @@ document.addEventListener "DOMContentLoaded", ->
         applyColor(num, key)
 
   applyColor = (num, color) ->
-    $svgs[num - 3].classList = [color]
+    targetSvg = $svgs[num - 3]
+    removeClasses(targetSvg)
+    targetSvg.classList.add(color)
 
   $vitaminInput = $("#vitamin-input")
   $vitaminOperations = $("#vitamin-operations")
@@ -55,7 +61,7 @@ document.addEventListener "DOMContentLoaded", ->
     if !data or data is ""
       resetSvgs()
 
-  $vitaminInput.value = "3g 4g"
+  $vitaminInput.value = "3g 4g 5w 6b"
   inputValidation.validate()
 
   operationsValidation = new Validator(

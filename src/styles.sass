@@ -1,36 +1,51 @@
+$border-color: rgb(238, 238, 238)
+
 body
   background: #eee
   text-align: center
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif
+  height: 100vh
 
 .shapes
-  min-height: 104px
+  $shape-xs-size: 61px
+  $shape-sm-size: 100px
+  height: $shape-xs-size + 4px
+  @media(min-width: 768px)
+    height: $shape-sm-size + 4px
   overflow: hidden
   display: inline-block
+  transition: height .25s
   svg
     width: 0
-    height: 100px
+    height: $shape-xs-size
+    @media(min-width: 768px)
+      height: $shape-sm-size
     fill: #fff
     stroke: #fff
     margin: 0
     stroke-width: 1px
     opacity: 0
     transform: scale(0)
-    transition: transform .25s, width .25s ease .2s, margin .25s ease .2s, opacity .25s
+    transition: transform .25s, width .25s ease .2s, height .25s, margin .25s ease .2s, opacity .25s
     position: relative
     float: left
     polygon
       fill: #fff
       stroke: #fff
-      transition-property: fill, stroke
+      transition-property: fill, stroke, transform
       transition-duration: .25s
+      transform: scale(0.62)
+      @media(min-width: 768px)
+        transform: none
     &.B, &.W, &.G
       transform: scale(1)
-      width: 100px
-      height: 100px
-      transition: transform .25s ease .2s, width .25s, margin .25s, opacity .25s
+      width: $shape-xs-size
+      margin-left: 8px
+      @media(min-width: 768px)
+        width: $shape-sm-size
+        margin-left: 15px
+      transition: transform .25s ease .2s, width .25s, height .25s, margin .25s, opacity .25s
       opacity: 1
-      margin-left: 15px
     &.B polygon
       fill: #000
       stroke: #000
@@ -43,39 +58,47 @@ body
     &:first-child
       margin-left: 0
 
-.form
-  background: #fff
-  display: inline-block
-  padding: 20px
-  margin: auto
+.form-wrapper
+  height: 100%
+  min-height: 540px
+  margin: 5px
   position: relative
-  top: 45vh
-  width: 460px
-  min-height: 161px
-  transform: translateY(-50%)
-  label
-    font-weight: bold
-    margin-top: 20px
-    display: block
-  input
-    border: 1px solid rgb(238, 238, 238)
-    display: inline
-    width: 100%
+  .form
+    background: #fff
+    display: inline-block
+    padding: 20px
+    margin: auto
+    width: 485px
+    min-height: 161px
     max-width: 100%
-    font-size: 20px
-    padding: 5px
     box-sizing: border-box
-    margin-top: 10px
-  textarea
-    border: 1px solid rgb(238, 238, 238)
-    display: inline
-    width: 100%
-    max-width: 100%
-    font-size: 20px
-    padding: 5px
-    box-sizing: border-box
-    margin-top: 10px
-    min-height: 130px
+    @media (min-height: 600px)
+      position: relative
+      top: 50%
+      transform: translateY(-50%)
+    label
+      font-weight: bold
+      margin-top: 20px
+      display: block
+    input
+      border: 1px solid $border-color
+      display: inline
+      width: 100%
+      max-width: 100%
+      font-size: 20px
+      padding: 5px
+      box-sizing: border-box
+      margin-top: 10px
+    textarea
+      border: 1px solid $border-color
+      display: inline
+      width: 100%
+      max-width: 100%
+      font-size: 20px
+      padding: 5px
+      box-sizing: border-box
+      margin-top: 10px
+      min-height: 130px
 
 .button
   color: white

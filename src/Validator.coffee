@@ -25,6 +25,7 @@ module.exports = class Validator
 
   success: (@data, message) ->
     @valid = true
+    @messageElem.classList.remove("error", "warning")
     @messageElem.innerHTML = message || ""
     @trigger "success", @data
 
