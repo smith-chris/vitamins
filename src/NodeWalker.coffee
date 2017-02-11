@@ -83,9 +83,6 @@ module.exports = class NodeWalker
           validate.error(operationsParsed, 'A value of this field should be an array. For example [["4","G","W"]].')
         else
           data = node.applySwapsSequentially(operationsParsed, validate)
-          console.log data
-          console.log node
-          console.log operationsParsed
           if data.node
             validate.error(data, "Couldnt perform operation #{data.index}
              - [#{JSON.stringify(data.swap)}] on vitamin line - [#{data.node.state()}]")

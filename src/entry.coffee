@@ -45,15 +45,38 @@ document.addEventListener "DOMContentLoaded", ->
     removeClasses(targetSvg)
     targetSvg.classList.add(color)
 
+  animating = false
+  interval = null
+  animate = (operations) ->
+    i = 0
+    animating = true
+    interval = setInterval (->
+      if i is operations.length
+        stopAnimation()
+        return
+      visualize(operations[i++].groups)
+    ), 750
 
-
-
+  stopAnimation = ->
+    clearInterval(interval)
+    animating = false
+#    visualize(initialStateValidation.data.groups)
+    $animateButton.innerHTML = "Start animation"
 
   $initialState = $("#initial-state")
   $swapOperations = $("#swap-operations")
   $finalState = $("#final-state")
 
   $animateButton = $("#animate")
+
+  $animateButton.addEventListener "click", ->
+    if not animating
+      if not this.classList.contains("disabled")
+        $animateButton.innerHTML = "Stop animation"
+        animate swapOperationsValidation.data.branch()
+    else
+      stopAnimation()
+
 
   initialStateValidation = new Validator(
     elem: $initialState

@@ -146,6 +146,12 @@ module.exports = class Node
     return JSON.stringify(swaps.reverse())
 
 
+  branch: ->
+    nodes = []
+    @forEachInBranch (node) ->
+      nodes.push node
+    return nodes.reverse()
+
   # **state()** returns a string representing Vitamins line state of this node.
 
   state: ->
@@ -159,11 +165,11 @@ module.exports = class Node
   # **states()** returns a JSON Array of states of all nodes in branch,
   # starting from initial node and finishing on current node.
 
-  states: ->
+  states: ({raw} = {})->
     states = []
     @forEachInBranch (node) ->
       states.push node.state()
-    return JSON.stringify(states.reverse())
+    return if raw then states.reverse() else JSON.stringify(states.reverse())
 
   # **applySwapsSequentially()** returns a new Node with applied swap
   # operations one after another(always on resulting node).
