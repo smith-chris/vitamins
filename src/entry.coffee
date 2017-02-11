@@ -45,53 +45,74 @@ document.addEventListener "DOMContentLoaded", ->
     removeClasses(targetSvg)
     targetSvg.classList.add(color)
 
-  $vitaminInput = $("#vitamin-input")
-  $vitaminOperations = $("#vitamin-operations")
-  $vitaminOutput = $("#vitamin-output")
 
-  inputValidation = new Validator(
-    elem: $vitaminInput
+
+
+
+  $initialState = $("#initial-state")
+  $swapOperations = $("#swap-operations")
+  $finalState = $("#final-state")
+
+  $animateButton = $("#animate")
+
+  initialStateValidation = new Validator(
+    elem: $initialState
     validate: (text) -> exerciseSolver.validateInput(text, @)
   )
 
-  inputValidation.on "success", (node) ->
-    visualize(node.groups)
+  onFormError = () ->
+    $animateButton.classList.add("disabled")
+    
+  onFormValidated = () ->
+    $animateButton.classList.remove("disabled")
 
-  inputValidation.on "error", (data) ->
+  initialStateValidation.on "success", (node) ->
+    visualize(node.groups)
+    swapOperationsValidation.validate()
+    if swapOperationsValidation.valid
+      onFormValidated()
+    else
+      finalStateValidation.validate()
+      if finalStateValidation.valid
+        onFormValidated()
+
+  initialStateValidation.on "error", (data) ->
+    onFormError()
     if !data or data is ""
       resetSvgs()
 
-  $vitaminInput.value = "3g 4g 5w 6b"
-  inputValidation.validate()
 
-  operationsValidation = new Validator(
-    elem: $vitaminOperations
+  swapOperationsValidation = new Validator(
+    elem: $swapOperations
     validate: (text) ->
-      if inputValidation.valid
-        exerciseSolver.validateOperations(operations: text, validate: @, node: inputValidation.data)
+      if initialStateValidation.valid
+        exerciseSolver.validateOperations(operations: text, validate: @, node: initialStateValidation.data)
       else
-        @error(inputValidation.data, "You must pass correct value to input field to proceed.")
-        # TODO hook an one-time event on inputValidation success that will validate this field again
+        @error(initialStateValidation.data, "You must pass correct value to input field to proceed.")
   )
 
-  operationsValidation.on "success", (data) ->
-    if data isnt inputValidation.data
-      console.log "Operations validated!"
-      $vitaminOutput.value = data.state()
+  swapOperationsValidation.on "error", onFormError
+
+  swapOperationsValidation.on "success", (data) ->
+    if data isnt initialStateValidation.data
+      $finalState.value = data.state()
+      finalStateValidation.clear()
+      onFormValidated()
 
 
-  outputValidation = new Validator(
-    elem: $vitaminOutput
+  finalStateValidation = new Validator(
+    elem: $finalState
     validate: (text) ->
-      if inputValidation.valid
+      if initialStateValidation.valid
         exerciseSolver.validateInput(text, @)
       else
-        @error(inputValidation.data, "You must pass correct value to input field to proceed.")
-        # TODO hook an one-time event on inputValidation success that will validate this field again
+        @error(initialStateValidation.data, "You must pass correct value to input field to proceed.")
   )
 
-  outputValidation.on "success", (data) ->
-    startNode = inputValidation.data
+  finalStateValidation.on "error", onFormError
+
+  finalStateValidation.on "success", (data) ->
+    startNode = initialStateValidation.data
     endNode = data
     exerciseSolver.validateIsPossibleToFind(
       startNode: startNode
@@ -102,6 +123,12 @@ document.addEventListener "DOMContentLoaded", ->
           console.log "All successful"
           endNode = exerciseSolver.find(startNode.state(), endNode.state())
           if endNode
-            # TODO enable animate button
-            $vitaminOperations.value = endNode?.swaps()
+            onFormValidated()
+            $swapOperations.value = endNode?.swaps()
+            swapOperationsValidation.success(endNode)
     )
+
+
+#  $initialState.value = "3g 4g 5w 6b"
+  $initialState.value = "3g 4g"
+  initialStateValidation.validate()
