@@ -10,6 +10,7 @@ document.addEventListener "DOMContentLoaded", ->
 
   vitamins = new VitaminLine(
     vitamins: $$(".shapes svg")
+    parent: $(".shapes")
     controlButton: $("#animate")
     data: -> swapOperationsValidation.data.branch()
   )
@@ -60,7 +61,6 @@ document.addEventListener "DOMContentLoaded", ->
   initialStateValidation.on "success", (node) ->
     vitamins.visualize(node.groups)
     vitamins.stopAnimation()
-    console.log "success"
     $makeAllWhiteBtn.classList.remove "disabled"
     swapOperationsValidation.validate()
     if swapOperationsValidation.valid
@@ -83,7 +83,7 @@ document.addEventListener "DOMContentLoaded", ->
       if initialStateValidation.valid
         exerciseSolver.validateOperations(operations: text, validate: @, node: initialStateValidation.data)
       else
-        @error(initialStateValidation.data, "You must pass correct value to initial field to proceed.")
+        @error(initialStateValidation.data, "You must pass correct value to the ,initial field to proceed.")
   )
 
   swapOperationsValidation.on "error", onFormError
@@ -101,7 +101,7 @@ document.addEventListener "DOMContentLoaded", ->
       if initialStateValidation.valid
         exerciseSolver.validateInput(text, @)
       else
-        @error(initialStateValidation.data, "You must pass correct value to initial field to proceed.")
+        @error(initialStateValidation.data, "You must pass correct value to the initial field to proceed.")
   )
 
   finalStateValidation.on "error", onFormError
@@ -115,7 +115,6 @@ document.addEventListener "DOMContentLoaded", ->
       validate:
         error: @error.bind(@)
         success: =>
-          console.log "All successful"
           endNode = exerciseSolver.find(startNode.state(), endNode.state())
           if endNode
             onFormValidated()
@@ -125,6 +124,5 @@ document.addEventListener "DOMContentLoaded", ->
     )
 
 
-#  $initialState.value = "3g 4g 5w 6b"
-#  $initialState.value = "3g 4g"
-#  initialStateValidation.validate(true)
+  $initialState.value = "3g 4g"
+  initialStateValidation.validate(true)

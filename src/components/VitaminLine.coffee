@@ -1,5 +1,5 @@
 module.exports = class Vitamins
-  constructor: ({@vitamins, @controlButton, @data}) ->
+  constructor: ({@vitamins, @parent, @controlButton, @data}) ->
     @animating = false
     @interval = null
 
@@ -32,19 +32,39 @@ module.exports = class Vitamins
     @removeClasses(targetSvg)
     targetSvg.classList.add(color)
 
+  scrollToView: (callback) ->
+    targetY = @parent.offsetTop - 10
+    if window.pageYOffset > targetY
+      currentY = window.pageYOffset
+      duration = 30
+      step = (currentY - targetY) / duration
+      @scrollInterval = setInterval (=>
+        currentY -= step
+        if currentY < targetY
+          currentY = targetY
+          clearInterval(@scrollInterval)
+          callback()
+        window.scrollTo(window.scrollX, currentY)
+      ), 1
+    else
+      callback()
+
   animate: (operations) ->
     if !@animating
       if operations?.length > 0
-        i = 1
-        @animating = true
-        @visualize(operations[0].groups)
-        @interval = setInterval (=>
-          if i is operations.length
-            @stopAnimation()
-            return
-          @visualize(operations[i++].groups)
-        ), 750
-        return true
+        clearInterval(@scrollInterval)
+        @scrollToView =>
+          i = 1
+          @animating = true
+          @visualize(operations[0].groups)
+          @interval = setInterval (=>
+            if i is operations.length
+              @stopAnimation()
+              return
+            @visualize(operations[i++].groups)
+          ), 750
+          return true
+
     return false
 
   enable: ->
