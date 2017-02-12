@@ -1,20 +1,23 @@
 Node = require "Node"
 NodeWalker = require "NodeWalker"
 Validator = require "Validator"
+VitaminLine = require("components/VitaminLine")
 require "styles"
 
 document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
   $$ = document.querySelectorAll.bind(document)
 
+  vitamins = new VitaminLine(
+    vitamins: $$(".shapes svg")
+    controlButton: $("#animate")
+    data: -> swapOperationsValidation.data.branch()
+  )
+
   exerciseSolver = new NodeWalker(
     possibleGroups: "gwb"
     filter: (num) -> num > 2 and num < 7
   )
-
-  removeClasses = ($element) ->
-    for className in $element.classList
-      $element.classList.remove(className)
 
   # Exercise 1B
   console.log exerciseSolver.makeAllWhite("3g 4g")
@@ -28,73 +31,25 @@ document.addEventListener "DOMContentLoaded", ->
       [4, "B", "W"]
     ]
   )
-  $svgs = $$(".shapes svg")
 
-  resetSvgs = () ->
-    for e in $svgs
-      e.classList = []
 
-  visualize = (groups) ->
-    resetSvgs()
-    for key, val of groups
-      for num in val
-        applyColor(num, key)
+  onFormError = () ->
+    vitamins.disable()
 
-  applyColor = (num, color) ->
-    targetSvg = $svgs[num - 3]
-    removeClasses(targetSvg)
-    targetSvg.classList.add(color)
-
-  animating = false
-  interval = null
-  animate = (operations) ->
-    if operations?.length > 0
-      i = 1
-      animating = true
-      visualize(operations[0].groups)
-      interval = setInterval (->
-        if i is operations.length
-          stopAnimation()
-          return
-        visualize(operations[i++].groups)
-      ), 750
-
-  stopAnimation = ->
-    clearInterval(interval)
-    animating = false
-    $animateButton.innerHTML = "Start animation"
-    $animateButton.classList.remove("active")
-
+  onFormValidated = () ->
+    vitamins.enable()
 
   $initialState = $("#initial-state")
   $swapOperations = $("#swap-operations")
   $finalState = $("#final-state")
-
-  $animateButton = $("#animate")
-
-  $animateButton.addEventListener "click", ->
-    if not animating
-      if not this.classList.contains("disabled")
-        $animateButton.innerHTML = "Stop animation"
-        $animateButton.classList.add("active")
-        animate swapOperationsValidation.data.branch()
-    else
-      stopAnimation()
-
 
   initialStateValidation = new Validator(
     elem: $initialState
     validate: (text) -> exerciseSolver.validateInput(text, @)
   )
 
-  onFormError = () ->
-    $animateButton.classList.add("disabled")
-    
-  onFormValidated = () ->
-    $animateButton.classList.remove("disabled")
-
   initialStateValidation.on "success", (node) ->
-    visualize(node.groups)
+    vitamins.visualize(node.groups)
     swapOperationsValidation.validate()
     if swapOperationsValidation.valid
       onFormValidated()
