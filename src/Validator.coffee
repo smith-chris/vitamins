@@ -1,7 +1,9 @@
 module.exports = class Validator
   constructor: ({@elem, validate, action = "input"}) ->
     @valid = false
-    @validate = =>
+    @validate = (force) =>
+      if force
+        @wasFocused = true
       if @wasFocused
         validate.call(@, @elem.value)
     @listeners = {}

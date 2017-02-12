@@ -17,8 +17,9 @@ module.exports = class NodeWalker
   # **makeAllWhite()** returns an array of swap operations needed to
   # make node white, meaning - put all numbers into 'W' group.
 
-  makeAllWhite: (input) -> @find(input, input.replace(/[a-z]/g, "w"))?.swaps()
+  makeAllWhite: (input) -> @find(input, NodeWalker.stateToWhite(input))?.swaps()
 
+  @stateToWhite: (state) -> state.toUpperCase().replace(/[A-Z]/g, "W")
 
   # **getStates()** returns a JSON Array of all node states in branch.
   #

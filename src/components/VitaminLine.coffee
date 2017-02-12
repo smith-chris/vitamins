@@ -54,7 +54,8 @@ module.exports = class Vitamins
     @controlButton.classList.add("disabled")
 
   stopAnimation: ->
-    clearInterval(@interval)
-    @animating = false
-    @controlButton.innerHTML = "Start animation"
-    @controlButton.classList.remove("active")
+    if @animating
+      clearInterval(@interval)
+      @animating = false
+      @controlButton.innerHTML = "Start animation"
+      @controlButton.classList.remove("active")

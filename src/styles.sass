@@ -1,4 +1,4 @@
-$border-color: rgb(238, 238, 238)
+$border-color: rgb(205, 205, 205)
 $anim-time: .25s
 
 body
@@ -127,6 +127,15 @@ body
     &:first-child
       margin-left: 0
 
+@mixin buttonBgColor($color)
+  background: $color
+  &:hover
+    background: darken($color, 6)
+  &:active
+    background: darken($color, 17)
+  &.active
+    background: darken($color, 22)
+
 .button
   color: white
   width: 100%
@@ -136,18 +145,19 @@ body
   cursor: pointer
   font-size: 1em
   padding: 0
-  background: deepskyblue
   line-height: 50px
   font-weight: bold
   display: block
   text-decoration: none
   transition: background $anim-time
-  &:hover
-    background: #00a8e0
-  &:active
-    background: #007ea9
-  &.active
-    background: #006a8e
+  @include buttonBgColor(deepskyblue)
+  &.purple
+    color: black
+    box-sizing: border-box
+    border: 1px solid black
+    @include buttonBgColor(white)
   &.disabled
-    background-color: #aaa
+    background: #aaa
+    border: none
+    color: white
     cursor: not-allowed
