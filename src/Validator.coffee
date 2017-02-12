@@ -27,11 +27,12 @@ module.exports = class Validator
 
   showMessage: (messageType, messageText) ->
     clearTimeout(@messageTimeout)
-    @textElem.classList.remove("error", "warning")
-    @textElem.classList.add(messageType)
+    @textElem.classList.remove "error", "warning"
+    @textElem.classList.add messageType
     @textElem.innerHTML = messageText
     @messageElem.style.height = "#{@textElem.offsetHeight}px"
-    @elem.parentNode.classList.add(messageType)
+    @elem.parentNode.classList.remove "error", "warning"
+    @elem.parentNode.classList.add messageType
 
   on: (eventName, callback) ->
     if callback and typeof callback is "function"
@@ -49,9 +50,10 @@ module.exports = class Validator
     @showMessage("error", message)
     @trigger "error", data
 
-  success: (@data) ->
+  success: (@data, clearMessage = true) ->
     @valid = true
-    @clearMessage()
+    if clearMessage
+      @clearMessage()
     @trigger "success", @data
 
   warning: (data, message) ->

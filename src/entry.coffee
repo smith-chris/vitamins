@@ -20,22 +20,6 @@ document.addEventListener "DOMContentLoaded", ->
     filter: (num) -> num > 2 and num < 7
   )
 
-  # Exercise 1B
-  console.log "Exercise 1B result:"
-  console.log exerciseSolver.makeAllWhite("3g 4g")
-
-  # Exercise 3A
-  console.log "Exercise 3A result:"
-  console.log exerciseSolver.getStates(
-    initial: "3g 4g"
-    operations: [
-      [4, "G", "B"]
-      [3, "G", "W"]
-      [4, "B", "W"]
-    ]
-  )
-
-
   onFormError = () ->
     vitamins.disable()
 
@@ -83,7 +67,7 @@ document.addEventListener "DOMContentLoaded", ->
       if initialStateValidation.valid
         exerciseSolver.validateOperations(operations: text, validate: @, node: initialStateValidation.data)
       else
-        @error(initialStateValidation.data, "You must pass correct value to the ,initial field to proceed.")
+        @error(initialStateValidation.data, "You must pass correct value to the initial field to proceed.")
   )
 
   swapOperationsValidation.on "error", onFormError

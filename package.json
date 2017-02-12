@@ -19,7 +19,7 @@
     "webpack": "2"
   },
   "scripts": {
-    "test": "mocha --compilers coffee:coffee-script/register",
+    "test": "mocha",
     "dev": "webpack -w",
     "make-docs": "docco src/*.coffee"
   },

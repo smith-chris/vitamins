@@ -61,7 +61,7 @@ module.exports = class NodeWalker
       if isValid
         validate.success(node)
       else
-        validate.success(node)
+        validate.success(node, false)
         validate.warning(node, "Did you mean '#{node.state()}'?")
       return true
 
