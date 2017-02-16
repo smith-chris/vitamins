@@ -84,6 +84,7 @@ document.addEventListener "DOMContentLoaded", ->
       initialStateText = form.fields.initialState.data.state()
       form.fields.finalState.fill(NodeWalker.stateToWhite(initialStateText))
 
+
   vitamins = new Vitamins(
     controlButton: $("#animate")
     minVitamin: minVitamin

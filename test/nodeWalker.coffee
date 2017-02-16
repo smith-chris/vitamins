@@ -7,8 +7,9 @@ describe "NodeWalker", ->
   nodeWalker = new NodeWalker(possibleGroups: "bwg")
 
   describe ".find()", ->
-    target = "3w 4w 5w 6w"
-    node = nodeWalker.find("3b 4b 5b 6b", target)
+    finalState = "3w 4w 5w 6w"
+    initialState = "3b 4b 5b 6b"
+    node = nodeWalker.find(initialState, finalState)
     it "Should return correct node", ->
       expect(node.state()).to.equal("3w 4w 5w 6w".toUpperCase())
 
@@ -21,6 +22,14 @@ describe "NodeWalker", ->
       jsonOutput = nodeWalker.makeAllWhite(state)
 
       expect(jsonOutput).to.equal('[[4,"G","B"],[3,"G","W"],[4,"B","W"]]')
+
+    it "Should compute very long initial state and not burn your computer", ->
+      initialState = ""
+      for i in [5..10]
+        initialState += "#{i}g "
+      swaps = nodeWalker.makeAllWhite(initialState)
+
+      expect(swaps).to.be.string
 
   describe ".getStates() [Exercise 3A]", ->
     it "Should return correct value", ->

@@ -64,9 +64,8 @@ module.exports = class Node
               if usedNumbers.indexOf(number) is -1
                 usedNumbers.push(number)
                 groups[groupName].push(number)
-
       for groupName, groupArray of groups
-        groupArray.sort()
+        groupArray.sort((a, b) -> a > b)
 
     return groups
 
