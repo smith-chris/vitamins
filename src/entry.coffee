@@ -1,6 +1,6 @@
 Node = require "utils/Node"
 NodeWalker = require "utils/NodeWalker"
-VitaminLine = require "components/VitaminLine"
+Vitamins = require "components/Vitamins"
 Validator = require "components/Validator"
 Form = require "components/Form"
 require "styles"
@@ -8,6 +8,7 @@ require "styles"
 document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
   $$ = document.querySelectorAll.bind(document)
+  $form = $(".form")
 
   exerciseSolver = new NodeWalker(
     possibleGroups: "gwb"
@@ -18,7 +19,7 @@ document.addEventListener "DOMContentLoaded", ->
     fields: [
       {
         elem: $("#initial-state")
-        validate: (text) -> exerciseSolver.validateInput(text, @)
+        validate: (text) -> exerciseSolver.validateState(text)
         name: "initialState"
         required: true
       }
@@ -40,7 +41,7 @@ document.addEventListener "DOMContentLoaded", ->
       {
         elem: $("#final-state")
         validate: (text) ->
-          result = exerciseSolver.validateInput(text, @)
+          result = exerciseSolver.validateState(text)
           if result.type isnt "error"
             if result.data
               return exerciseSolver.validateIsPossibleToFind
@@ -81,15 +82,15 @@ document.addEventListener "DOMContentLoaded", ->
       form.fields.finalState.fill(NodeWalker.stateToWhite(initialStateText))
 
 
-  vitamins = new VitaminLine(
-    vitamins: $$(".shapes svg")
-    parent: $(".shapes")
+  vitamins = new Vitamins(
     controlButton: $("#animate")
     data: -> form.fields.swapOperations.data.branch()
   )
+
+  $form.insertBefore(vitamins.view, $form.querySelector(".input-group"))
 
   form.fields.initialState.on "success", ({data}) ->
     vitamins.visualize(data.groups)
     vitamins.stopAnimation()
 
-  form.fields.initialState.on "error", -> vitamins.resetSvgs()
+  form.fields.initialState.on "error", -> vitamins.resetVitamins()

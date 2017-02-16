@@ -49,7 +49,7 @@ module.exports = class NodeWalker
   # It returns object in format `type: string, message: string, data: any`
   # that can be processed further on by validator logic.
 
-  validateInput: (state) ->
+  validateState: (state) ->
     node = new Node({state, possibleGroups: @possibleGroups, filter: @filter})
     isEmpty = node.id is ""
     if isEmpty

@@ -1,6 +1,4 @@
-$border-color: rgb(205, 205, 205)
-$anim-time: .25s
-
+@import "variables"
 body
   background: #eee
   text-align: center
@@ -75,59 +73,6 @@ body
     box-sizing: border-box
     margin-top: 10px
     min-height: 130px
-
-.shapes
-  $shape-xs-size: 61px
-  $shape-sm-size: 100px
-  height: $shape-xs-size + 4px
-  @media(min-width: 768px)
-    height: $shape-sm-size + 4px
-  overflow: hidden
-  display: inline-block
-  transition: height $anim-time
-  svg
-    width: 0
-    height: $shape-xs-size
-    @media(min-width: 768px)
-      height: $shape-sm-size
-    fill: #fff
-    stroke: #fff
-    margin: 0
-    margin-bottom: 4px
-    stroke-width: 1px
-    opacity: 0
-    transform: scale(0)
-    transition: transform $anim-time, width $anim-time ease .2s, height $anim-time, margin $anim-time ease .2s, opacity $anim-time
-    position: relative
-    float: left
-    polygon
-      fill: #fff
-      stroke: #fff
-      transition-property: fill, stroke, transform
-      transition-duration: $anim-time
-      transform: scale(0.62)
-      @media(min-width: 768px)
-        transform: none
-    &.B, &.W, &.G
-      transform: scale(1)
-      width: $shape-xs-size
-      margin-left: 8px
-      @media(min-width: 768px)
-        width: $shape-sm-size
-        margin-left: 15px
-      transition: transform $anim-time ease .2s, width $anim-time, height $anim-time, margin $anim-time, opacity $anim-time
-      opacity: 1
-    &.B polygon
-      fill: #000
-      stroke: #000
-    &.W polygon
-      stroke: #000
-      fill: #fff
-    &.G polygon
-      fill: #888
-      stroke: #888
-    &:first-child
-      margin-left: 0
 
 @mixin styleButton($color)
   background: $color
