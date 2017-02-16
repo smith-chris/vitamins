@@ -65,7 +65,7 @@ module.exports = class NodeWalker
       if isValid
         return type: "success", data: node
       else
-        return type: "warning", message: "Did you mean '#{node.state()}'?", data: node
+        return type: "warning", message: "Do you mean '#{node.state()}'?", data: node
 
 
   # **validateOperations()** validates if given `operations: Array` can be performed

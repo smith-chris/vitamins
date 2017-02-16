@@ -30,7 +30,7 @@ module.exports = class Vitamins
       @vitamins.push vitamin
       @view.appendChild vitamin
 
-  @generateVitamin: (sides, size)->
+  generateVitamin: ({sides, size})->
     xmlns = "http://www.w3.org/2000/svg";
     radius = size / 2 - 1
     if sides % 4 is 0
@@ -60,6 +60,7 @@ module.exports = class Vitamins
     polygon = document.createElementNS(xmlns, "polygon")
     polygon.setAttribute("points", points)
     svg.appendChild(polygon)
+    return svg
 
   removeClasses: ($element) ->
     for className in $element.classList
