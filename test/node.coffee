@@ -6,25 +6,25 @@ possibleGroups = "bwg"
 describe "Node", ->
   describe ".makeGroups()", ->
     it "Should fail when no possibleGroups argument is provided and limited is set to true(default)", ->
-      expect(-> Node.makeGroups(input: "3g 4g")).to.throw(Error)
+      expect(-> Node.makeGroups(state: "3g 4g")).to.throw(Error)
 
     it "Should generate groups", ->
-      groups = JSON.stringify Node.makeGroups(input: "3g 4g", possibleGroups: possibleGroups)
+      groups = JSON.stringify Node.makeGroups(state: "3g 4g", possibleGroups: possibleGroups)
 
       expect(groups).to.equal('{"B":[],"G":[3,4],"W":[]}')
 
     it "Should'nt generate groups with duplicated numbers", ->
-      groups = JSON.stringify Node.makeGroups(input: "3g 3g 4g 4g", possibleGroups: possibleGroups)
+      groups = JSON.stringify Node.makeGroups(state: "3g 3g 4g 4g", possibleGroups: possibleGroups)
 
       expect(groups).to.equal('{"B":[],"G":[3,4],"W":[]}')
 
     it "Should sort groups", ->
-      groups = JSON.stringify Node.makeGroups(input: "1w 3g 2w 4g", possibleGroups: possibleGroups)
+      groups = JSON.stringify Node.makeGroups(state: "1w 3g 2w 4g", possibleGroups: possibleGroups)
 
       expect(groups).to.equal('{"B":[],"G":[3,4],"W":[1,2]}')
 
     it "Should ignore additional groups", ->
-      groups = Node.makeGroups(input: "3g 4w 2c 1w 5a", possibleGroups: possibleGroups)
+      groups = Node.makeGroups(state: "3g 4w 2c 1w 5a", possibleGroups: possibleGroups)
 
       expect(groups).to.deep.equal({B: [], W: [1, 4], G: [3]})
 
@@ -38,26 +38,26 @@ describe "Node", ->
 
   describe ".generateId()", ->
     it "Should generate correct ID", ->
-      id = Node.generateId(input: "3g 4w 2c 1w 5a", possibleGroups: possibleGroups)
+      id = Node.generateId(state: "3g 4w 2c 1w 5a", possibleGroups: possibleGroups)
 
       expect(id).to.equal("G3W1W4")
 
-    it "Should generate correct ID no matter in what order groups are written in input string", ->
-      id = Node.generateId(input: randomizeId("3g 4w 2c 1w 5a"), possibleGroups: possibleGroups)
+    it "Should generate correct ID no matter in what order groups are written in state string", ->
+      id = Node.generateId(state: randomizeId("3g 4w 2c 1w 5a"), possibleGroups: possibleGroups)
 
       expect(id).to.equal("G3W1W4")
 
-      id = Node.generateId(input: randomizeId("3g 4w 2c 4e 6g 2c 1w 5a"), possibleGroups: possibleGroups)
+      id = Node.generateId(state: randomizeId("3g 4w 2c 4e 6g 2c 1w 5a"), possibleGroups: possibleGroups)
       console.log id
 
       expect(id).to.equal("G3G6W1W4")
 
-  node1input = "3g 4g 5w"
-  node1 = new Node(input: node1input, possibleGroups: possibleGroups)
+  node1state = "3g 4g 5w"
+  node1 = new Node(state: node1state, possibleGroups: possibleGroups)
 
   describe ".state()", ->
-    it "Should be equal to input string", ->
-      expect(node1.state()).to.equal(node1input.toUpperCase())
+    it "Should be equal to state string", ->
+      expect(node1.state()).to.equal(node1state.toUpperCase())
 
   describe ".possibleSwaps()", ->
     it "Should return correct swaps", ->

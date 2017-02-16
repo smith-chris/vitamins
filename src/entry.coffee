@@ -44,15 +44,15 @@ document.addEventListener "DOMContentLoaded", ->
           if result.type isnt "error"
             if result.data
               return exerciseSolver.validateIsPossibleToFind
-                startNode: @form.fields.initialState.data
-                endNode: result.data
+                initialNode: @form.fields.initialState.data
+                finalNode: result.data
           return result
         on:
           setData: ({data}) -> @fill(data.state(), false)
           success: ({data}) -> @form.fields.swapOperations.setData(
             exerciseSolver.find(
-              data.startNode.state(),
-              data.endNode.state()
+              data.initialNode.state(),
+              data.finalNode.state()
             )
           )
         name: "finalState"

@@ -16,17 +16,17 @@ describe "NodeWalker", ->
       expect(JSON.parse(node.swaps()).length).to.equal(15)
 
   describe ".makeAllWhite() [Exercise 1B]", ->
-    input = "3g 4g"
+    state = "3g 4g"
     it "Should return correct json string", ->
-      jsonOutput = nodeWalker.makeAllWhite(input)
+      jsonOutput = nodeWalker.makeAllWhite(state)
 
       expect(jsonOutput).to.equal('[[4,"G","B"],[3,"G","W"],[4,"B","W"]]')
 
   describe ".getStates() [Exercise 3A]", ->
     it "Should return correct value", ->
       result = nodeWalker.getStates(
-        initial: "3g 4g"
-        operations: [
+        initialState: "3g 4g"
+        swapOperations: [
           [4, "G", "B"]
           [3, "G", "W"]
           [4, "B", "W"]

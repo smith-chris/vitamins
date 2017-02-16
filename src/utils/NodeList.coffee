@@ -4,15 +4,15 @@ Node = require "./Node.coffee"
 # The **NodeList** class instance contains array of all possible and
 # non-repetitive nodes at the same depth in nodes tree.
 #
-# It takes `topNode: Node` as argument.
+# It takes `initialNode: Node` as argument.
 #
-# `@idsCacheList` property stores all Node ids this NodeList ever had at any depth.
+# `@idsCacheList` property stores all Node IDs this NodeList ever had at any depth.
 
 module.exports = class NodeList
-  constructor: (topNode) ->
-    if not topNode instanceof Node
+  constructor: (initialNode) ->
+    if not initialNode instanceof Node
       throw new Error("You must provide top node to create NodeList.")
-    @nodes = [topNode]
+    @nodes = [initialNode]
     @idsCacheList = []
 
 
@@ -21,7 +21,8 @@ module.exports = class NodeList
   isDuplicate: (node) -> @idsCacheList.indexOf(node.id) >= 0
 
 
-  # **compute()** replaces `@nodes` array property with new array containing possible nodes in one level deeper depth.
+  # **compute()** replaces `@nodes` array property of this instance
+  # with new array containing possible nodes in one level deeper depth.
 
   compute: ->
     newList = []
@@ -34,7 +35,7 @@ module.exports = class NodeList
     @nodes = newList
     return @
 
-  # **match()** returns `Node` matching given id at current depth or `null` if match fails.
+  # **match()** returns `Node` matching given ID at current depth or `null` if match fails.
 
   match: (id) ->
     for node in @nodes

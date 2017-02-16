@@ -4,7 +4,7 @@ Node = require "./Node.coffee"
 
 # The **NodeWalker** class instance contains set of methods for Node related computations.
 #
-# It takes `@possibleGroups` argument to define what type of Vitamins it can contain.
+# It takes `@possibleGroups` argument to define what type of Nodes it can create.
 #
 # Optionally it can take `@filter` argument for removing unwanted elements in Node creation.
 
@@ -17,46 +17,51 @@ module.exports = class NodeWalker
   # **makeAllWhite()** returns an array of swap operations needed to
   # make node white, meaning - put all numbers into 'W' group.
 
-  makeAllWhite: (input) -> @find(input, NodeWalker.stateToWhite(input))?.swaps()
+  makeAllWhite: (state) -> @find(state, NodeWalker.stateToWhite(state))?.swaps()
+
+
+  # `static` **stateToWhite()** takes a state string and returns
+  # similar state with all elements set to white.
 
   @stateToWhite: (state) -> state.toUpperCase().replace(/[A-Z]/g, "W")
 
-  # **getStates()** returns a JSON Array of all node states in branch.
+  # **getStates()** returns a JSON Array string of all node states in branch.
   #
-  # It takes `initial: string` to create initial node as a starting point.
-  # Also either `operations: Array` or `target: string` is required.
+  # It takes `initialState: string` to create initial node as a starting point.
+  # Also either `swapOperations: Array` or `finalState: string` argument is required.
 
-  getStates: ({initial, operations, target}) ->
-    if initial
-      if operations
-        node = new Node(input: initial, possibleGroups: @possibleGroups)
+  getStates: ({initialState, swapOperations, finalState}) ->
+    if initialState
+      if swapOperations
+        node = new Node(state: initialState, possibleGroups: @possibleGroups)
         if node? and node.id isnt ""
-          node = node.applySwapsSequentially(operations)
+          node = node.applySwapsSequentially(swapOperations)
         else
           return null
-      else if target
-        node = @find(initial, target)
+      else if finalState
+        node = @find(initialState, finalState)
       return node.states()
 
 
-  # **validateInput()** validates if all elements of given `input: string` will
+  # **validateInput()** validates if all elements of given `state: string` will
   # be used when creating new Node from it.
   #
-  # It takes `validate: Validator` argument to invoke success, warning and error events.
+  # It returns object in format `type: string, message: string, data: any`
+  # that can be processed further on by validator logic.
 
-  validateInput: (input) ->
-    node = new Node({input, possibleGroups: @possibleGroups, filter: @filter})
+  validateInput: (state) ->
+    node = new Node({state, possibleGroups: @possibleGroups, filter: @filter})
     isEmpty = node.id is ""
     if isEmpty
-      if input.length > 0
-        message = "'#{input}' is not a valid value for this field."
+      if state.length > 0
+        message = "'#{state}' is not a valid value for this field."
       else
         message = "This field cannot be empty."
-      return type: "error", message: message, data: input
+      return type: "error", message: message, data: state
 
     else
-      input = input.toUpperCase().trim().split(/[ ]+/).join(" ")
-      isValid = input is node.state()
+      state = state.toUpperCase().trim().split(/[ ]+/).join(" ")
+      isValid = state is node.state()
       if isValid
         return type: "success", data: node
       else
@@ -66,7 +71,8 @@ module.exports = class NodeWalker
   # **validateOperations()** validates if given `operations: Array` can be performed
   # on given `node: Node`.
   #
-  # It takes `validate: Validator` argument to invoke success, warning and error events.
+  # It returns object in format `type: string, message: string, data: any`
+  # that can be processed further on by validator logic.
 
   validateOperations: ({operations, node}) ->
     if operations?.length > 0
@@ -91,48 +97,51 @@ module.exports = class NodeWalker
       return type: "error", message: "This field cannot be empty.", data: operations
 
 
-  # **validateIsPossibleToFind()** validates if given `startNode: Node` can end up
-  # (by performing swap operations) being a Node with a state of given `endNode: Node`.
+  # **validateIsPossibleToFind()** validates if given `initialNode: Node` can end up
+  # (by performing swap operations) being a Node with a state of given `finalNode: Node`.
   #
-  # It takes `validate: Validator` argument to invoke success, warning and error events.
+  # It returns object in format `type: string, message: string, data: any`
+  # that can be processed further on by validator logic.
 
-  validateIsPossibleToFind: ({startNode, endNode}) ->
+  validateIsPossibleToFind: ({initialNode, finalNode}) ->
     decline = (word, amount) -> return if amount > 1 then "#{word}s" else word
     data =
-      startNode: startNode
-      endNode: endNode
-      startNumbers: startNode.groupsToNumbers()
-      endNumbers: endNode.groupsToNumbers()
-    if data.startNumbers.length isnt data.endNumbers.length
-      message = "Vitamins inital state (#{data.startNumbers.length}
-        #{decline("element", data.startNumbers.length)}) should have
-        the same amount of elements as final state (#{data.endNumbers.length}
-        #{decline("element", data.endNumbers.length)})."
+      initialNode: initialNode
+      finalNode: finalNode
+      initialNumbers: initialNode.groupsToNumbers()
+      finalNumbers: finalNode.groupsToNumbers()
+    if data.initialNumbers.length isnt data.finalNumbers.length
+      initLength = data.initialNumbers.length
+      finalLength = data.initialNumbers.length
+      message = "Vitamins initial state (#{initLength}
+        #{decline("element", initLength)}) should have
+        the same amount of elements as final state (#{finalLength}
+        #{decline("element", finalLength)})."
       return type: "error", message: message, data: data
-    else if data.startNumbers.join(",") isnt data.endNumbers.join(",")
-      return type: "error", message: "Vitamins in initial state do not match end state vitamins.", data: data
+    else if data.initialNumbers.join(",") isnt data.finalNumbers.join(",")
+      return type: "error", message: "Vitamins in initial state do not match final state vitamins.", data: data
     else
       return type: "success", message: "", data: data
 
 
-  # **generateId()** returns unique string based on given `input: string`.
+  # **generateId()** returns unique string based on given `state: string`.
 
-  generateId: (input) ->
-    Node.generateId(input: input, possibleGroups: @possibleGroups, filter: @filter)
+  generateId: (state) ->
+    Node.generateId(state: state, possibleGroups: @possibleGroups, filter: @filter)
 
 
   # **makeGroups()** returns object that contains vitamin color and numbers information.
 
-  makeGroups: (input) ->
-    Node.makeGroups(input: input, possibleGroups: @possibleGroups, filter: @filter)
+  makeGroups: (state) ->
+    Node.makeGroups(state: state, possibleGroups: @possibleGroups, filter: @filter)
 
 
-  # **find()** returns node with state as in `target: string` argument that was created by
-  # performing one or more swap operations on node with state as in `input: string` argument.
+  # **find()** returns node with state as in `targetState: string` argument that was created by
+  # performing one or more swap operations on node with state as in `initialState: string` argument.
 
-  find: (input, target) ->
-    nodes = new NodeList(new Node(input: input, possibleGroups: @possibleGroups, filter: @filter))
-    targetId = @generateId(target)
+  find: (initialState, targetState) ->
+    nodes = new NodeList(new Node(state: initialState, possibleGroups: @possibleGroups, filter: @filter))
+    targetId = @generateId(targetState)
     if targetId? and targetId isnt ""
       moves = 0
       while true
