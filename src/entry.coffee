@@ -7,12 +7,15 @@ require "styles"
 
 document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
-  $$ = document.querySelectorAll.bind(document)
+
   $form = $(".form")
+
+  minVitamin = 3
+  maxVitamin = 7
 
   exerciseSolver = new NodeWalker(
     possibleGroups: "gwb"
-    filter: (num) -> num > 2 and num < 7
+    filter: (num) -> num >= minVitamin and num <= maxVitamin
   )
 
   form = new Form(
@@ -81,9 +84,10 @@ document.addEventListener "DOMContentLoaded", ->
       initialStateText = form.fields.initialState.data.state()
       form.fields.finalState.fill(NodeWalker.stateToWhite(initialStateText))
 
-
   vitamins = new Vitamins(
     controlButton: $("#animate")
+    minVitamin: minVitamin
+    maxVitamin: maxVitamin
     data: -> form.fields.swapOperations.data.branch()
   )
 

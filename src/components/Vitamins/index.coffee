@@ -1,7 +1,7 @@
 require "./styles.sass"
 
 module.exports = class Vitamins
-  constructor: ({@controlButton, @data}) ->
+  constructor: ({@controlButton, @data, @minVitamin, @maxVitamin}) ->
     @animating = false
     @interval = null
     @view = document.createElement("span")
@@ -21,10 +21,16 @@ module.exports = class Vitamins
           @animate @data()
       else
        @stopAnimation()
-    for i in [3..6]
-      @generatePoints(i, 100)
 
-  generatePoints: (sides, size)->
+    for i in [@minVitamin..@maxVitamin]
+      vitamin = @generateVitamin(
+        sides: i,
+        size: 100
+      )
+      @vitamins.push vitamin
+      @view.appendChild vitamin
+
+  @generateVitamin: (sides, size)->
     xmlns = "http://www.w3.org/2000/svg";
     radius = size / 2 - 1
     if sides % 4 is 0
@@ -50,12 +56,10 @@ module.exports = class Vitamins
       points += "#{parseInt(x)},#{parseInt(y)} "
       i++
 
-    svgElem = document.createElementNS(xmlns, "svg")
+    svg = document.createElementNS(xmlns, "svg")
     polygon = document.createElementNS(xmlns, "polygon")
     polygon.setAttribute("points", points)
-    svgElem.appendChild(polygon)
-    @vitamins.push svgElem
-    @view.appendChild(svgElem)
+    svg.appendChild(polygon)
 
   removeClasses: ($element) ->
     for className in $element.classList
@@ -76,7 +80,7 @@ module.exports = class Vitamins
     @removeClasses(targetVitamin)
     targetVitamin.classList.add(color)
 
-  scrollToVitamins: (callback) ->
+  scrollToView: (callback) ->
     targetY = @view.offsetTop - 10
     if window.pageYOffset > targetY
       currentY = window.pageYOffset
@@ -97,7 +101,7 @@ module.exports = class Vitamins
     if !@animating
       if nodesBranch?.length > 0
         clearInterval(@scrollInterval)
-        @scrollToVitamins =>
+        @scrollToView =>
           i = 1
           @animating = true
           @visualize(nodesBranch[0].groups)
