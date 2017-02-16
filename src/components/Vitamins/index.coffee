@@ -21,14 +21,22 @@ module.exports = class Vitamins
           @animate @data()
       else
        @stopAnimation()
-
+    if @minVitamin < 3
+      @minVitamin = 3
+      console.warn "new Vitamins(minVitamin: num) - num cannot be lower then 3."
     for i in [@minVitamin..@maxVitamin]
       vitamin = @generateVitamin(
         sides: i,
         size: 100
       )
-      @vitamins.push vitamin
-      @view.appendChild vitamin
+      vitaminWrapper = document.createElement("span")
+      vitaminWrapper.appendChild(vitamin)
+      vitaminNumber = document.createElement("span")
+      vitaminNumber.classList.add("vitamin-number")
+      vitaminNumber.innerHTML = i
+      vitaminWrapper.appendChild(vitaminNumber)
+      @vitamins.push vitaminWrapper
+      @view.appendChild vitaminWrapper
 
   generateVitamin: ({sides, size})->
     xmlns = "http://www.w3.org/2000/svg";

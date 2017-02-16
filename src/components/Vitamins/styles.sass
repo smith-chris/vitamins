@@ -1,19 +1,21 @@
 @import "src/variables"
 
 .vitamins
-  $shape-xs-size: 47px
-  $shape-sm-size: 100px
-  height: $shape-xs-size + 4px
+  $shape-xs-width: 47px
+  $shape-xs-height: $shape-xs-width + 16px
+  $shape-sm-width: 100px
+  $shape-sm-height: $shape-sm-width + 18px
+  height: $shape-xs-height + 4px
   @media(min-width: 768px)
-    height: $shape-sm-size + 4px
+    height: $shape-sm-height + 4px
   overflow: hidden
   display: inline-block
   transition: height $anim-time
-  svg
+  > span
     width: 0
-    height: $shape-xs-size
+    height: $shape-xs-height
     @media(min-width: 768px)
-      height: $shape-sm-size
+      height: $shape-sm-height
     fill: #fff
     stroke: #fff
     margin: 0
@@ -24,6 +26,16 @@
     transition: transform $anim-time, width $anim-time ease .2s, height $anim-time, margin $anim-time ease .2s, opacity $anim-time
     position: relative
     float: left
+    .vitamin-number
+      position: absolute
+      bottom: 0
+      width: 100%
+      left: 0
+      font-weight: bold
+      font-size: 12px
+      @media(min-width: 768px)
+        font-size: 14px
+
     polygon
       fill: #fff
       stroke: #fff
@@ -34,10 +46,10 @@
         transform: none
     &.B, &.W, &.G
       transform: scale(1)
-      width: $shape-xs-size
+      width: $shape-xs-width
       margin-left: 8px
       @media(min-width: 768px)
-        width: $shape-sm-size
+        width: $shape-sm-width
         margin-left: 15px
       transition: transform $anim-time ease .2s, width $anim-time, height $anim-time, margin $anim-time, opacity $anim-time
       opacity: 1
