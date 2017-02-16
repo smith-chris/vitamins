@@ -44,7 +44,7 @@ module.exports = class NodeWalker
   #
   # It takes `validate: Validator` argument to invoke success, warning and error events.
 
-  validateInput: (input, validate) ->
+  validateInput: (input) ->
     node = new Node({input, possibleGroups: @possibleGroups, filter: @filter})
     isEmpty = node.id is ""
     if isEmpty
@@ -52,19 +52,15 @@ module.exports = class NodeWalker
         message = "'#{input}' is not a valid value for this field."
       else
         message = "This field cannot be empty."
-      validate.error(input, message)
-      return false
+      return type: "error", message: message, data: input
 
     else
       input = input.toUpperCase().trim().split(/[ ]+/).join(" ")
       isValid = input is node.state()
       if isValid
-        validate.success(node)
+        return type: "success", data: node
       else
-        validate.success(node, false)
-        validate.warning(node, "Did you mean '#{node.state()}'?")
-      return true
-
+        return type: "warning", message: "Did you mean '#{node.state()}'?", data: node
 
 
   # **validateOperations()** validates if given `operations: Array` can be performed
@@ -72,28 +68,27 @@ module.exports = class NodeWalker
   #
   # It takes `validate: Validator` argument to invoke success, warning and error events.
 
-  validateOperations: ({operations, node, validate}) ->
+  validateOperations: ({operations, node}) ->
     if operations?.length > 0
       try
         operationsParsed = JSON.parse(operations.toUpperCase())
-      catch err
-        validate.error err, err.toString()
-        return
+      catch error
+        return type: "error", message: error.toString(), data: error
       if operationsParsed
         if not Array.isArray(operationsParsed)
-          validate.error(operationsParsed, 'A value of this field should be an array. For example [["4","G","W"]].')
+          return type: "error", message: 'A value of this field should be an array. For example [["4","G","W"]].', data: operationsParsed
         else
           if operationsParsed.length is 0
-            validate.error(data, "Provide at least one swap operation to perform.")
+            return type: "error", message: "Provide at least one swap operation to perform.", data: data
             return
-          data = node.applySwapsSequentially(operationsParsed, validate)
+          data = node.applySwapsSequentially(operationsParsed)
           if data.node
-            validate.error(data, "Could'nt perform operation #{data.index}
-             - [#{JSON.stringify(data.swap)}] on vitamin state - [#{data.node.state()}]")
+            return type: "error", message: "Could not perform operation #{data.index}
+             - [#{JSON.stringify(data.swap)}] on vitamin state - [#{data.node.state()}]", data: data
           else
-            validate.success(data)
+            return type: "success", message: "", data: data
     else
-      validate.error(operations, "This field cannot be empty.")
+      return type: "error", message: "This field cannot be empty.", data: operations
 
 
   # **validateIsPossibleToFind()** validates if given `startNode: Node` can end up
@@ -101,21 +96,23 @@ module.exports = class NodeWalker
   #
   # It takes `validate: Validator` argument to invoke success, warning and error events.
 
-  validateIsPossibleToFind: ({startNode, endNode, validate}) ->
+  validateIsPossibleToFind: ({startNode, endNode}) ->
     decline = (word, amount) -> return if amount > 1 then "#{word}s" else word
     data =
+      startNode: startNode
+      endNode: endNode
       startNumbers: startNode.groupsToNumbers()
       endNumbers: endNode.groupsToNumbers()
     if data.startNumbers.length isnt data.endNumbers.length
-      validate.error(data,
-        "Vitamins inital state (#{data.startNumbers.length}
+      message = "Vitamins inital state (#{data.startNumbers.length}
         #{decline("element", data.startNumbers.length)}) should have
         the same amount of elements as final state (#{data.endNumbers.length}
-        #{decline("element", data.endNumbers.length)}).")
+        #{decline("element", data.endNumbers.length)})."
+      return type: "error", message: message, data: data
     else if data.startNumbers.join(",") isnt data.endNumbers.join(",")
-      validate.error(data, "Vitamins in initial state do not match end state vitamins.")
+      return type: "error", message: "Vitamins in initial state do not match end state vitamins.", data: data
     else
-      validate.success(data)
+      return type: "success", message: "", data: data
 
 
   # **generateId()** returns unique string based on given `input: string`.

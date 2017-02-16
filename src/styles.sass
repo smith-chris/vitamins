@@ -129,8 +129,10 @@ body
     &:first-child
       margin-left: 0
 
-@mixin buttonBgColor($color)
+@mixin styleButton($color)
   background: $color
+  @if saturation($color) < 50%
+    color: black
   &:hover
     background: darken($color, 6)
   &:active
@@ -152,12 +154,11 @@ body
   display: block
   text-decoration: none
   transition: background $anim-time
-  @include buttonBgColor(deepskyblue)
+  @include styleButton(deepskyblue)
   &.white
-    color: black
     box-sizing: border-box
     border: 1px solid black
-    @include buttonBgColor(white)
+    @include styleButton(white)
   &.disabled
     background: #aaa !important
     border: none

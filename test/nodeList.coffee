@@ -1,4 +1,4 @@
 expect = require("chai").expect
 
-Node = require "../src/Node.coffee"
-NodeList = require "../src/NodeList.coffee"
+Node = require "../src/utils/Node.coffee"
+NodeList = require "../src/utils/NodeList.coffee"

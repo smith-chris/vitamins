@@ -1,7 +1,7 @@
 expect = require("chai").expect
 
-Node = require "../src/Node.coffee"
-NodeWalker = require "../src/NodeWalker.coffee"
+Node = require "../src/utils/Node.coffee"
+NodeWalker = require "../src/utils/NodeWalker.coffee"
 
 describe "NodeWalker", ->
   nodeWalker = new NodeWalker(possibleGroups: "bwg")

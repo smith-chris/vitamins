@@ -1,6 +1,6 @@
 expect = require("chai").expect
 
-Node = require "../src/Node.coffee"
+Node = require "../src/utils/Node.coffee"
 possibleGroups = "bwg"
 
 describe "Node", ->

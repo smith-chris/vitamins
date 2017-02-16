@@ -1,112 +1,95 @@
-Node = require "Node"
-NodeWalker = require "NodeWalker"
+Node = require "utils/Node"
+NodeWalker = require "utils/NodeWalker"
 VitaminLine = require "components/VitaminLine"
-Validator = require "Validator"
-Form2 = require("Form2")
+Validator = require "components/Validator"
+Form = require "components/Form"
 require "styles"
 
 document.addEventListener "DOMContentLoaded", ->
   $ = document.querySelector.bind(document)
   $$ = document.querySelectorAll.bind(document)
 
-  vitamins = new VitaminLine(
-    vitamins: $$(".shapes svg")
-    parent: $(".shapes")
-    controlButton: $("#animate")
-    data: -> form1.swapOperationsValidation.data.branch()
-  )
-
   exerciseSolver = new NodeWalker(
     possibleGroups: "gwb"
     filter: (num) -> num > 2 and num < 7
   )
 
-  form1 = require("Form")(
-    $initialState: $("#initial-state")
-    $swapOperations: $("#swap-operations")
-    $finalState: $("#final-state")
-    $makeAllWhiteBtn: $("#make-all-white")
-    exerciseSolver: exerciseSolver
-    vitamins: vitamins
-    onFormError: -> vitamins.disable()
-    onFormValidated: -> vitamins.enable()
-  )
-
-  form = new Form2(
+  form = new Form(
     fields: [
       {
         elem: $("#initial-state")
         validate: (text) -> exerciseSolver.validateInput(text, @)
         name: "initialState"
         required: true
-        # on success - validate what depends on it
-        # and trigger formValidated if valid
       }
       {
         elem: $("#swap-operations")
-        validate: (text, dependantData) -> exerciseSolver.validateOperations(
-          operations: text,
-          validate: @,
-          node: dependantData
-        )
-        onSuccess: (data) ->
-          if @get("initialState").data isnt data
-            @get("finalState").fill(data.state())
-        dependsOn: ["initialState"]
+        validate: (text) ->
+          exerciseSolver.validateOperations(
+            operations: text,
+            node: @form.fields.initialState.data
+          )
+        name: "swapOperations"
+        on:
+          setData: ({data}) -> @fill(data.swaps(), false)
+          success: ({data}) -> @form.fields.finalState.setData(data)
+        prerequisites: ["initialState"]
         required:
-          oneInGroup: "forAnimation"
+          group: "forAnimation"
       }
       {
-        elem: $("#make-all-white")
-        validate: (text) -> exerciseSolver.validateInput(text, @)
+        elem: $("#final-state")
+        validate: (text) ->
+          result = exerciseSolver.validateInput(text, @)
+          if result.type isnt "error"
+            if result.data
+              return exerciseSolver.validateIsPossibleToFind
+                startNode: @form.fields.initialState.data
+                endNode: result.data
+          return result
+        on:
+          setData: ({data}) -> @fill(data.state(), false)
+          success: ({data}) -> @form.fields.swapOperations.setData(
+            exerciseSolver.find(
+              data.startNode.state(),
+              data.endNode.state()
+            )
+          )
         name: "finalState"
         # will automatically check if this field is valid before proceeding
-        dependsOn: ["initialState"]
+        prerequisites: ["initialState"]
         required:
-          oneInGroup: "forAnimation"
+          group: "forAnimation"
       }
     ]
-    onFieldsValidated: ->
-      # if onFieldsValidated is provided, it will be triggered
-      # before onFormValidated
-      startNode = @get("initialState").data
-      endNode = @get("finalState").data
-      exerciseSolver.validateIsPossibleToFind(
-        startNode: startNode
-        endNode: endNode
-        validate:
-          error: @get("finalState").error.bind(@)
-          success: =>
-            endNode = exerciseSolver.find(startNode.state(), endNode.state())
-            if endNode
-              tr
-              $swapOperations.value = endNode?.swaps()
-              res.swapOperationsValidation.clearMessage()
-              res.swapOperationsValidation.data = endNode
-      )
+    groups: [
+      {
+        name: "forAnimation"
+        requiredFields: 1
+      }
+    ]
     # adds click event that will validate whole form
     submit: $("#animate")
   )
 
-  # questionable api
-  form.get("initialState").onChange "valid", (value) ->
-    $("#make-all-white").classList[value?"remove":"add"]("disabled")
-
-  form.get("initialState").on "success", (data) ->
-    vitamins.visualize(node.groups)
-    vitamins.stopAnimation()
-
-  # any field error will trigger formError also
-  form.get("initialState").on "error", (data) ->
-    if !data or data is ""
-      vitamins.resetSvgs()
+  form.fields.initialState.on "valid", ({data}) ->
+    $("#make-all-white").classList[if data then "remove" else "add"]("disabled")
 
   $("#make-all-white").addEventListener "click", ->
-    # form.valid() returns if form is valid
-    # with value returns if field is valid
-    if form.get("initialState").valid
-      initialState = form.getFieldData("initial state")
-      # todo hook auto validation on setting value
-      form.get("final state").fill(NodeWalker.stateToWhite(initialState))
+    if form.fields.initialState.valid
+      initialStateText = form.fields.initialState.data.state()
+      form.fields.finalState.fill(NodeWalker.stateToWhite(initialStateText))
 
 
+  vitamins = new VitaminLine(
+    vitamins: $$(".shapes svg")
+    parent: $(".shapes")
+    controlButton: $("#animate")
+    data: -> form.fields.swapOperations.data.branch()
+  )
+
+  form.fields.initialState.on "success", ({data}) ->
+    vitamins.visualize(data.groups)
+    vitamins.stopAnimation()
+
+  form.fields.initialState.on "error", -> vitamins.resetSvgs()

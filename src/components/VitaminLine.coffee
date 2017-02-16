@@ -1,4 +1,4 @@
-module.exports = class Vitamins
+module.exports = class VitaminLine
   constructor: ({@vitamins, @parent, @controlButton, @data}) ->
     @animating = false
     @interval = null
