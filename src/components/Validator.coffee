@@ -1,4 +1,6 @@
-module.exports = class Validator
+EventEmmiter = require "utils/EventEmmiter"
+
+module.exports = class Validator extends EventEmmiter
   constructor: ({@elem, @name, @form, validate, actionType = "input"}) ->
     @valid = false
     @wasFocused = false
@@ -18,15 +20,15 @@ module.exports = class Validator
 
     @on "error", ({message}) ->
       @showMessage("error", message)
-      @trigger "valid", data: false
+      @emit "valid", data: false
 
     @on "success", ({@data}) ->
       @clearMessage()
-      @trigger "valid", data: true
+      @emit "valid", data: true
 
     @on "warning", ({data, message, passing = true}) ->
       if passing
-        @trigger "success", data: data
+        @emit "success", data: data
       @showMessage("warning", message)
 
     if arguments[0].on
@@ -40,7 +42,7 @@ module.exports = class Validator
     if !validateRequisites or @prerequisitesValid()
       if @wasFocused
         validationResult = @_validate.call(@, @elem.value)
-        @trigger validationResult.type, validationResult
+        @emit validationResult.type, validationResult
         if @valid
           if validateRequisites or forceRequisites
             if @postrequisites
@@ -59,7 +61,7 @@ module.exports = class Validator
   setData: (data) ->
     @data = data
     @clearMessage()
-    @trigger "setData", data: data
+    @emit "setData", data: data
 
   decamelize: (text) ->
     while match = text.match /[A-Z]/
@@ -105,14 +107,3 @@ module.exports = class Validator
     @messageElem.style.height = "#{@messageTextElem.offsetHeight}px"
     @elem.parentNode.classList.remove "error", "warning"
     @elem.parentNode.classList.add messageType
-
-  on: (eventName, callback) ->
-    if callback and typeof callback is "function"
-      if not @listeners[eventName]
-        @listeners[eventName] = []
-      @listeners[eventName].push callback.bind(@)
-
-  trigger: (eventName, data) ->
-    if @listeners[eventName]
-      for listener in @listeners[eventName]
-        listener(data)

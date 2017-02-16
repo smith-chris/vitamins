@@ -1,6 +1,7 @@
 Validator = require "./Validator"
+EventEmmiter = require "utils/EventEmmiter"
 
-module.exports = class Form
+module.exports = class Form extends EventEmmiter
   constructor: ({fields, @submit, groups})->
     @fields = {}
     @required = []
@@ -39,18 +40,6 @@ module.exports = class Form
 
       @on "error", -> @submit.classList.add "disabled"
 
-
-  on: (eventName, callback) ->
-    if callback and typeof callback is "function"
-      if not @listeners[eventName]
-        @listeners[eventName] = []
-      @listeners[eventName].push callback.bind(@)
-
-  trigger: (eventName, data) ->
-    if @listeners[eventName]
-      for listener in @listeners[eventName]
-        listener(data)
-
   validate: (force = false) =>
     valid = true
     if @required
@@ -78,6 +67,6 @@ module.exports = class Form
               return
 
     if valid
-      @trigger "success"
+      @emit "success"
     else
-      @trigger "error"
+      @emit "error"
