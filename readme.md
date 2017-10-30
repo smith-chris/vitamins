@@ -1,6 +1,10 @@
-# Vitamins
+## Vitamins
 
-Simple and clean visualization of 'vitamins' for Vitamin London. 
+Simple and clean visualization of 'vitamins' interview test for Vitamin London. 
+
+## The assignment
+
+You can find pdf [here](https://github.com/smith-chris/vitamins/blob/master/vitamin-puzzle.pdf).
 
 ## Installation
 
